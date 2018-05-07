@@ -5,23 +5,23 @@ model_fm = function(t, y, params, plantInt, harvInt, thinInt, enrichInt) {
 	with(as.list(c(y, params, plantInt, harvInt, thinInt, enrichInt)), {
 
 		# management
-		plantIntNeg <- 1 - plantInt
-		enrichIntNeg <- 1 - enrichInt
+		naturalSuccession <- 1 - plantInt # plantation
+		naturalColonization <- 1 - enrichInt # enrichement planting
 
 		# Fraction of empty patches converted into the different states following a disturbance
 		pB = alphab * (B + M)
 		pT = alphat * (T + M)
 		pM = pB * pT
-		pB_ = pB * (1 - pT) #what is it exaclty?
-		pT_ = pT * (1 - pB) #what is it exaclty?
+		pB_ = pB * (1 - pT)
+		pT_ = pT * (1 - pB)
 
 		# Regeneration state
 		R = 1 - B - T - M
 
 		# Differential equations describing the dynamics of the state variables
-		dBdt = pB_ * R + theta * (1 - thetat) * M - ((betat * (T + M) * enrichIntNeg) + enrichInt) * B - (epsB + epsB * harvInt) * B
-		dTdt = ((pT_ * plantIntNeg) + plantInt) * R + (theta * thetat + thinInt * (1 - theta)) * M - betab * (B + M) * T - epsT * T
-		dMdt = pM * R + betab * (B + M) * T + ((betat * (T + M) * enrichIntNeg) + enrichInt) * B - (theta * (1 - thetat) + (theta * thetat + thinInt * (1 - theta))) * M - epsM * M
+		dBdt = pB_ * naturalSuccession * R + theta * (1 - thetat) * M - ((betat * (T + M) * naturalColonization) + enrichInt) * B - (epsB + epsB * harvInt) * B
+		dTdt = ((pT_ * naturalSuccession) + plantInt) * R + (theta * thetat + thinInt * (1 - theta)) * M - betab * (B + M) * T - epsT * T
+		dMdt = pM  * naturalSuccession * R + betab * (B + M) * T + ((betat * (T + M) * naturalColonization) + enrichInt) * B - (theta * (1 - thetat) + (theta * thetat + thinInt * (1 - theta))) * M - epsM * M
 		list(c(dBdt, dTdt, dMdt))
 		})
 	}
