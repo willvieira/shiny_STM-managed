@@ -5,7 +5,7 @@ server <- function(input, output) {
 
   # get the model versions
   source("R/vissault_model_v3.R")
-  source("R/vissault_model_fm.R")
+  source("R/vissault_model_fm.R") # model with forest management integrated
   # parameters
   params = read.table("R/pars.txt", row.names = 1)
 
@@ -87,18 +87,24 @@ server <- function(input, output) {
       return(rp)
     }
 
+    # color
+    stateColor <- setNames(c(rgb(0.15,	0.55, 0.54), rgb(0.53, 0.79, 0.51), rgb(0.98, 0.63, 0.22), 'black'), c('Boreal', 'Temperate', 'Mixed', 'Regeneration'))
+
+    plot(1:4, col = stateColor)
+
     #  plot
-    par(mfrow = c(1, 2), cex = 1.4, mar = c(3,3,1.2,0.5), mgp = c(1.5, 0.3, 0), tck = -.008)
-    plot(data[[2]][, 1], type = "l", ylim = c(0, 1), xlim = xlim, xlab = "Time", ylab = "State proportion", lwd = 1.8)
-    invisible(sapply(2:4, function(x) lines(data[[2]][, x], col = x, lwd = 1.8)))
+    par(mfrow = c(1, 2), cex = 1.4, mar = c(4,3,3,2), mgp = c(1.5, 0.3, 0), tck = -.008)
+    plot(data[[2]][, 1], type = "l", col = stateColor[1], ylim = c(0, 1), xlim = xlim, xlab = "", ylab = "State proportion", lwd = 2.1)
+    invisible(sapply(2:4, function(x) lines(data[[2]][, x], col = stateColor[x], lwd = 2.1)))
     mtext("bfCC", 3, line = -1.2, cex = 1.3)
     legend("topright", legend = leg(data), bty = "n")
 
-    plot(data1[[2]][, 1], type = "l", ylim = c(0, 1), xlim = xlim, xlab = "Time", ylab = "", lwd = 1.8)
-    invisible(sapply(2:4, function(x) lines(data1[[2]][, x], col = x, lwd = 1.8)))
+    plot(data1[[2]][, 1], type = "l", col = stateColor[1], ylim = c(0, 1), xlim = xlim, xlab = "", ylab = "", lwd = 2.1)
+    invisible(sapply(2:4, function(x) lines(data1[[2]][, x], col = stateColor[x], lwd = 2.1)))
     mtext("afCC", 3, line = -1.2, cex = 1.3)
+    mtext("Time (year * 5)", 1, line = -1.8, outer = TRUE, cex = 1.5)
     legend("topright", legend = leg(data1), bty = "n")
-    mtext(paste0('Plantation = ', plantInt, '; Harvest = ', harvInt, '; Thinning = ', thinInt, '; Enrich = ', enrichInt), side = 3, line = -.8, cex = 1.5, outer = TRUE)
+    mtext(paste0('Plantation = ', plantInt, '; Harvest = ', harvInt, '; Thinning = ', thinInt, '; Enrich = ', enrichInt), side = 3, line = -2.5, cex = 1.5, outer = TRUE)
   }
 
   run <- function(ENV1a, ENV1b, plantInt = 0, harvInt = 0, thinInt = 0, enrichInt = 0, plotLimit = NULL)
@@ -110,7 +116,7 @@ server <- function(input, output) {
 
   eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
 
-  output$distPlot <- renderPlot({
+  output$dynamic <- renderPlot({
 
     if(input$cc == 'RCP4.5') env1b = -0.882
     if(input$cc == 'RCP6') env1b = -0.7335

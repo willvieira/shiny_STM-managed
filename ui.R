@@ -5,7 +5,7 @@ ui <- fluidPage(
 
   navbarPage("STM managed - v0.2",
 
-  tabPanel("Plot",
+  tabPanel("Dynamic",
 
     # App title ----
     titlePanel("Effect of forest management in the migration rate of the eastern North American forest"),
@@ -46,7 +46,7 @@ ui <- fluidPage(
                           max = 1,
                           value = 0),
 
-            HTML("<font size='4'><b>Xlim of plot<br></b></font><br>"),
+            HTML("<font size='4'><b>Limit of x axis<br></b></font><br>"),
               # Input: Selector for choosing dataset ----
               sliderInput(inputId = "plotLimit",
                           label = "Choose a limit",
@@ -59,9 +59,10 @@ ui <- fluidPage(
           mainPanel(
 
             # Output
-            plotOutput(outputId = "dynamic")
+            plotOutput(outputId = "dynamic"),
             #plotOutput(outputId = "test")
 
+            div(img(src='model_process.pdf', height = 350), style="text-align: center;")
           )
         )
       ),
