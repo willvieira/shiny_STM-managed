@@ -87,8 +87,8 @@ server <- function(input, output) {
       return(rp)
     }
 
-    # color
-    stateColor <- setNames(c(rgb(0.15,	0.55, 0.54), rgb(0.53, 0.79, 0.51), rgb(0.98, 0.63, 0.22), 'black'), c('Boreal', 'Temperate', 'Mixed', 'Regeneration'))
+    # state color
+    stateColor <- setNames(c(rgb(0.15,	0.55, 0.54), rgb(0.98, 0.63, 0.22), rgb(0.53, 0.79, 0.51), 'black'), c('Boreal', 'Temperate', 'Mixed', 'Regeneration'))
 
     plot(1:4, col = stateColor)
 
