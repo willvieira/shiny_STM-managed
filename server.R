@@ -9,6 +9,9 @@ server <- function(input, output) {
   # parameters
   params = read.table("R/pars.txt", row.names = 1)
 
+  ##########################################################################################
+  #  Function to solve the model and get the trace matrix, TRE, Eq, deltaEq and eigenvalue
+  ##########################################################################################
 
   solveEq <- function(func = model_fm, # = model
                       init, # = T0 ou y
@@ -65,6 +68,10 @@ server <- function(input, output) {
     return(list(eq = state, mat = trace.mat, ev = ev, dst = dst, TRE = TRE))
   }
 
+  ##########################################################################################
+  #  Function to plot the solved model
+  ##########################################################################################
+
   plot_solve <- function(data, data1, plotLimit = NULL, plantInt, harvInt, thinInt, enrichInt)
   {
 
@@ -107,12 +114,20 @@ server <- function(input, output) {
     mtext(paste0('Plantation = ', plantInt, '; Harvest = ', harvInt, '; Thinning = ', thinInt, '; Enrich = ', enrichInt), side = 3, line = -2.5, cex = 1.5, outer = TRUE)
   }
 
+  ##########################################################################################
+  #  Function to run both solveEq and plot_solve functions
+  ##########################################################################################
+
   run <- function(ENV1a, ENV1b, plantInt = 0, harvInt = 0, thinInt = 0, enrichInt = 0, plotLimit = NULL)
   {
     data <- solveEq(func = model_fm, init = eqBoreal, ENV1 = ENV1a, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
     data1 <- solveEq(func = model_fm, init = eqBoreal, ENV1 = ENV1b, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
     plot_solve(data = data, data1 = data1, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit)
   }
+
+  ##########################################################################################
+  #  Output of shiny App
+  ##########################################################################################
 
   eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
 
