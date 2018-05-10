@@ -69,7 +69,7 @@ server <- function(input, output) {
   }
 
   ##########################################################################################
-  #  Function to plot the solved model
+  #  Function to plot the solved model - dynamic
   ##########################################################################################
 
   plot_solve <- function(data, data1, plotLimit = NULL, plantInt, harvInt, thinInt, enrichInt)
@@ -97,8 +97,6 @@ server <- function(input, output) {
     # state color
     stateColor <- setNames(c(rgb(0.15,	0.55, 0.54), rgb(0.98, 0.63, 0.22), rgb(0.53, 0.79, 0.51), 'black'), c('Boreal', 'Temperate', 'Mixed', 'Regeneration'))
 
-    plot(1:4, col = stateColor)
-
     #  plot
     par(mfrow = c(1, 2), cex = 1.4, mar = c(4,3,3,2), mgp = c(1.5, 0.3, 0), tck = -.008)
     plot(data[[2]][, 1], type = "l", col = stateColor[1], ylim = c(0, 1), xlim = xlim, xlab = "", ylab = "State proportion", lwd = 2.1)
@@ -115,10 +113,10 @@ server <- function(input, output) {
   }
 
   ##########################################################################################
-  #  Function to run both solveEq and plot_solve functions
+  #  Function to run both solveEq and plot_solve functions - Dynamic
   ##########################################################################################
 
-  run <- function(ENV1a, ENV1b, plantInt = 0, harvInt = 0, thinInt = 0, enrichInt = 0, plotLimit = NULL)
+  run_dynamic <- function(ENV1a, ENV1b, plantInt = 0, harvInt = 0, thinInt = 0, enrichInt = 0, plotLimit = NULL)
   {
     data <- solveEq(func = model_fm, init = eqBoreal, ENV1 = ENV1a, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
     data1 <- solveEq(func = model_fm, init = eqBoreal, ENV1 = ENV1b, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
@@ -126,19 +124,130 @@ server <- function(input, output) {
   }
 
   ##########################################################################################
-  #  Output of shiny App
+  #  Function to get summarized data using the solveEq function
+  ##########################################################################################
+
+  solve_summary <- function(env1b, managPractices) {
+
+    # data frame to save solveEq output
+    dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA), c('managInt', 'TRE', 'Ev', 'EqB', 'EqT', 'EqM', 'EqR'))
+
+    # get initial state proportion
+    eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
+
+    # management practices
+    managPrac <- list()
+    for(i in 1:4) {
+      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
+      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
+      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
+      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
+    }
+
+    # solveEq for each management intensity
+    for(i in 1:dim(dat)[1]) {
+
+      res <- solveEq(func = model_fm, init = eqBoreal, ENV1 = env1b,
+                    plantInt = managPrac[[1]][i],
+                    harvInt = managPrac[[2]][i],
+                    thinInt = managPrac[[3]][i],
+                    enrichInt = managPrac[[4]][i])
+
+      dat[i, c(4: 7)] <- c(res[[1]], 1 - sum(res[[1]]))
+      dat[i, c(2, 3)] <- c(res[[5]], res[[3]])
+
+    }
+
+    return(dat)
+
+  }
+
+  ##########################################################################################
+  #  Function to plot solve_summary
+  ##########################################################################################
+
+  plot_summary <- function(dat, ylimTRE = NULL, ylimEv = NULL) {
+
+    # state color
+    stateColor <- setNames(c(rgb(0.15,	0.55, 0.54), rgb(0.98, 0.63, 0.22), rgb(0.53, 0.79, 0.51), 'black'), c('Boreal', 'Temperate', 'Mixed', 'Regeneration'))
+
+    # plots
+    par(mfrow = c(1, 3), cex = 1.4, mar = c(4,3,3,1), mgp = c(1.5, 0.3, 0), tck = -.008)
+
+    # TRE
+    plot(dat$managInt, dat$TRE, type = 'l', lwd = 2.1, ylim = ylimTRE, xlab = '', ylab = 'Time to reach equilibrium (year * 5)')
+
+    # Ev
+    plot(dat$managInt, dat$Ev, type = 'l', lwd = 2.1, ylim = ylimEv, xlab = '', ylab = 'Largest eigenvalue')
+
+    # Eq
+    plot(dat$managInt, dat$EqB, col = stateColor[1], type = 'l', lwd = 2.1, ylim = c(0, 1), xlab = '', ylab = 'State proportion')
+    invisible(sapply(5:7, function(x) points(dat$managInt, dat[, x], type = 'l', col = stateColor[x-3], lwd = 2.1)))
+
+    # text
+    mtext("Management intensity", 1, line = -1.8, outer = TRUE, cex = 1.5)
+
+  }
+
+  ##########################################################################################
+  #  Function to run plot_summary
+  ##########################################################################################
+
+  run_summary <- function(env1b, managPractices, ylimTRE = NULL, ylimEv = NULL) {
+
+    dat <- solve_summary(env1b, managPractices)
+    plot_summary(dat, ylimTRE, ylimEv)
+  }
+
+  ##########################################################################################
+  #  Output of shiny App for Panel 1 - Dynamic
   ##########################################################################################
 
   eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
 
   output$dynamic <- renderPlot({
 
+    # CC scenarios
     if(input$cc == 'RCP4.5') env1b = -0.882
     if(input$cc == 'RCP6') env1b = -0.7335
     if(input$cc == 'RCP8.5') env1b = -0.1772
 
-    run(ENV1a = -1.55, ENV1b = env1b, plantInt = input$Plantation, harvInt = input$Harvest, thinInt = input$Thinning, enrichInt = input$Enrichement, plotLimit = input$plotLimit)
+    run_dynamic(ENV1a = -1.55, ENV1b = env1b, plantInt = input$Plantation, harvInt = input$Harvest, thinInt = input$Thinning, enrichInt = input$Enrichement, plotLimit = input$plotLimit)
 
     })
+
+    ##########################################################################################
+    #  Output of shiny App for Panel 2 - Summary
+    ##########################################################################################
+
+    eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
+
+    output$summary <- renderPlot({
+
+      # CC scenarios
+      if(input$cc2 == '0') env1b = -1.55
+      if(input$cc2 == 'RCP4.5') env1b = -0.882
+      if(input$cc2 == 'RCP6') env1b = -0.7335
+      if(input$cc2 == 'RCP8.5') env1b = -0.1772
+
+      # management practices
+      managPrac <- rep(0, 4)
+      for(i in 1:length(input$managPractices)) {
+        if(input$managPractices[i] == 1) managPrac[i] = 1
+      }
+
+      if(input$ylimNull == FALSE) {
+        ylimTRE = NULL; ylimEv = NULL
+      }else {
+        ylimTRE = input$ylimTRE; ylimEv = input$ylimEv
+      }
+
+      run_summary(env1b = env1b, managPractices = managPrac, ylimTRE = ylimTRE, ylimEv = ylimEv)
+
+      })
+
+      output$error <- renderText({
+        if(is.null(input$managPractices)) warning('Select a managagement practice')
+      })
 
 }
