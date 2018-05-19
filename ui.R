@@ -97,9 +97,9 @@ tabPanel("Dynamic",
             # Input: checkbox with management practices ----
             checkboxGroupInput("managPractices", "Select at least one management practice:",
                                c("Plantation" = 1,
-                                 "Harvest" = 1,
-                                 "Thinning" = 1,
-                                 "Enrichement planting" = 1)),
+                                 "Harvest" = 2,
+                                 "Thinning" = 3,
+                                 "Enrichement planting" = 4)),
 
            HTML("<font size='4'><b>Fixed limit of y axis<br></b></font><br>"),
 

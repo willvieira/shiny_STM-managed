@@ -139,9 +139,6 @@ server <- function(input, output) {
     managPrac <- list()
     for(i in 1:4) {
       managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
-      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
-      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
-      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
     }
 
     # solveEq for each management intensity
@@ -231,9 +228,17 @@ server <- function(input, output) {
       if(input$cc2 == 'RCP8.5') env1b = -0.1772
 
       # management practices
-      managPrac <- rep(0, 4)
+      managP <- rep(0, 4)
       for(i in 1:length(input$managPractices)) {
-        if(input$managPractices[i] == 1) managPrac[i] = 1
+        if(input$managPractices[i] == 1) {
+          managP[1] = 1
+        }else if(input$managPractices[i] == 2) {
+          managP[2] = 1
+        }else if(input$managPractices[i] == 3) {
+          managP[3] = 1
+        }else if(input$managPractices[i] == 4) {
+          managP[4] = 1
+        }
       }
 
       if(input$ylimNull == FALSE) {
@@ -242,7 +247,7 @@ server <- function(input, output) {
         ylimTRE = input$ylimTRE; ylimEv = input$ylimEv
       }
 
-      run_summary(env1b = env1b, managPractices = managPrac, ylimTRE = ylimTRE, ylimEv = ylimEv)
+      run_summary(env1b = env1b, managPractices = managP, ylimTRE = ylimTRE, ylimEv = ylimEv)
 
       })
 
