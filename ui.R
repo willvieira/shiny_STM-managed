@@ -3,7 +3,7 @@ library(shiny)
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(
 
-navbarPage("STM managed - v0.5",
+navbarPage("STM managed - v0.6",
 
 ##########################################################################################
 #  Panel 1 - Dynamic
@@ -130,6 +130,48 @@ tabPanel("Dynamic",
         mainPanel(
           h3(textOutput(outputId = "error")),
           plotOutput(outputId = "summary"),
+          div(img(src='model_process.pdf', height = 350), style="text-align: center;")
+        )
+      )
+    ),
+
+    ##########################################################################################
+    #  Panel 3 - Output correlation
+    ##########################################################################################
+
+    tabPanel("Output correlation",
+
+      titlePanel("Effect of forest management in the migration rate of the eastern North American forest"),
+
+      # Sidebar layout with input and output definitions ----
+      sidebarLayout(
+
+        # Sidebar panel for inputs ----
+        sidebarPanel(width = 3,
+
+          HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
+            # Input: Selector for choosing dataset ----
+            radioButtons(inputId = "cc3",
+                        label = "Select the RCP:",
+                        choices = c("0", "RCP4.5", "RCP6", "RCP8.5"),
+                        selected = "RCP4.5"),
+
+            radioButtons(inputId = "growth3",
+                        label = "Select the growth patern of climate change:",
+                        choices = c("straight", "linear", "exponential"), inline = T),
+
+          HTML("<font size='4'><b>Management practices<br></b></font><br>"),
+
+            # Input: checkbox with management practices ----
+            radioButtons("managPractices2", "Select at least one management practice:",
+                         choices = c('Plantation', 'Harvest', 'Thinning', 'Enrichement planting'),
+                         selected = 'Plantation')
+
+          ),
+
+        # Main panel for displaying outputs ----
+        mainPanel(
+          plotOutput(outputId = "cor"),
           div(img(src='model_process.pdf', height = 350), style="text-align: center;")
         )
       )

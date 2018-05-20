@@ -151,7 +151,7 @@ server <- function(input, output) {
   solve_summary <- function(env1b, growth, managPractices) {
 
     # data frame to save solveEq output
-    dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA), c('managInt', 'TRE', 'Ev', 'EqB', 'EqT', 'EqM', 'EqR'))
+    dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA, NA), c('managInt', 'TRE', 'Dis', 'Ev', 'EqB', 'EqT', 'EqM', 'EqR'))
 
     # management practices
     managPrac <- list()
@@ -168,8 +168,8 @@ server <- function(input, output) {
                     thinInt = managPrac[[3]][i],
                     enrichInt = managPrac[[4]][i])
 
-      dat[i, c(4: 7)] <- c(res[[1]], 1 - sum(res[[1]]))
-      dat[i, c(2, 3)] <- c(res[[5]], res[[3]])
+      dat[i, c(5: 8)] <- c(res[['eq']], 1 - sum(res[['eq']]))
+      dat[i, c(2, 3, 4)] <- c(res[['TRE']], res[['dst']], res[['ev']])
 
     }
 
@@ -212,6 +212,19 @@ server <- function(input, output) {
 
     dat <- solve_summary(env1b, growth, managPractices)
     plot_summary(dat, ylimTRE, ylimEv)
+  }
+
+  ##########################################################################################
+  #  Function to plot output correlation
+  ##########################################################################################
+
+  outputCor <- function(env1b, growth, managPractices) {
+
+    dat <- solve_summary(env1b, growth, managPractices)
+    par(mfrow = c(1, 3), cex = 1.4, mar = c(4,3,3,2), mgp = c(1.5, 0.3, 0), tck = -.008)
+    plot(dat$Ev, dat$TRE, type = 'l', lwd = 2.1, xlab = 'Largest real part', xlab = 'Time to reach equilibrium')
+    plot(dat$Dis, dat$TRE, type = 'l', lwd = 2.1, xlab = 'DeltaEq', ylab = 'Time to reach equilibrium')
+    plot(dat$Dis, dat$Ev, type = 'l', lwd = 2.1, xlab = 'DeltaEq', ylab = 'Largest real part')
   }
 
   ##########################################################################################
@@ -268,5 +281,27 @@ server <- function(input, output) {
       output$error <- renderText({
         if(is.null(input$managPractices)) warning('Please, select at least one management practice')
       })
+
+      ##########################################################################################
+      #  Output of shiny App for Panel 3 - Output correlation
+      ##########################################################################################
+
+      output$cor <- renderPlot({
+
+        # CC scenarios
+        if(input$cc3 == '0') env1b = -1.55
+        if(input$cc3 == 'RCP4.5') env1b = -0.882
+        if(input$cc3 == 'RCP6') env1b = -0.7335
+        if(input$cc3 == 'RCP8.5') env1b = -0.1772
+
+        # management practices
+        if(input$managPractices2 == 'Plantation') managP2 = c(1, 0, 0, 0)
+        if(input$managPractices2 == 'Harvest') managP2 = c(0, 1, 0, 0)
+        if(input$managPractices2 == 'Thinning') managP2 = c(0, 0, 1, 0)
+        if(input$managPractices2 == 'Enrichement planting') managP2 = c(0, 0, 0, 1)
+
+        outputCor(env1b = env1b, growth = input$growth3, managPractices = managP2)
+
+        })
 
 }
