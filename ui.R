@@ -3,7 +3,7 @@ library(shiny)
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(
 
-navbarPage("STM managed - v0.3",
+navbarPage("STM managed - v0.5",
 
 ##########################################################################################
 #  Panel 1 - Dynamic
@@ -24,7 +24,11 @@ tabPanel("Dynamic",
             # Input: Selector for choosing dataset ----
             radioButtons(inputId = "cc",
                         label = "Select the RCP:",
-                        choices = c("RCP4.5", "RCP6", "RCP8.5")),
+                        choices = c("RCP4.5", "RCP6", "RCP8.5"), inline = T),
+
+            radioButtons(inputId = "growth",
+                        label = "Select the growth patern of climate change:",
+                        choices = c("straight", "linear", "exponential"), inline = T),
 
           HTML("<font size='4'><b>Intensity of management practices<br></b></font><br>"),
 
@@ -92,6 +96,10 @@ tabPanel("Dynamic",
                         choices = c("0", "RCP4.5", "RCP6", "RCP8.5"),
                         selected = "RCP4.5"),
 
+            radioButtons(inputId = "growth2",
+                        label = "Select the growth patern of climate change:",
+                        choices = c("straight", "linear", "exponential"), inline = T),
+
           HTML("<font size='4'><b>Management practices<br></b></font><br>"),
 
             # Input: checkbox with management practices ----
@@ -120,7 +128,7 @@ tabPanel("Dynamic",
 
         # Main panel for displaying outputs ----
         mainPanel(
-          textOutput(outputId = "error"),
+          h3(textOutput(outputId = "error")),
           plotOutput(outputId = "summary"),
           div(img(src='model_process.pdf', height = 350), style="text-align: center;")
         )

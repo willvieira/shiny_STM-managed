@@ -14,8 +14,9 @@ server <- function(input, output) {
   ##########################################################################################
 
   solveEq <- function(func = model_fm, # = model
-                      init, # = T0 ou y
+                      ENV0, # = to get state at T0 ou y
                       ENV1, # temperature
+                      growth = 'linear', # patern of climate change increase [straight, linear, exponential]
                       plantInt = 0, # Intensity of plantation (in % [0-1])
                       harvInt = 0, # Intensity of harvest (increasing the parameter in % [0-1])
                       thinInt = 0, # Intensity of thinning (increasing the parameter in % [0-1])
@@ -25,8 +26,20 @@ server <- function(input, output) {
   {
     library(rootSolve)
 
-    # get pars
-    pars <- get_pars(ENV1 = ENV1, ENV2 = 0, params, int = 5)
+    # get equilibrium for initial condition (ENV0)
+    init <- get_eq(get_pars(ENV1 = ENV0, ENV2 = 0, params, int = 5))[[1]]
+
+    # get pars depending on the growth mode
+    envDiff <- ENV1 - ENV0
+    if(growth == 'straight') {
+      pars <- get_pars(ENV1 = ENV1, ENV2 = 0, params, int = 5)
+    }else if(growth == 'linear') {
+      gwt <- 1:20 * envDiff/20 + ENV0
+      envGrowth <- c(ENV0, gwt, rep(gwt[20], maxsteps))
+    }else if(growth == 'exponential') {
+      gwt <- ENV0 * ((ENV1/ENV0)^(1/20*1:20))
+      envGrowth <- c(ENV0, gwt, rep(gwt[20], maxsteps))
+    }
 
     nochange = 0
 
@@ -36,7 +49,15 @@ server <- function(input, output) {
     #plot(0, state[2], ylim = c(0,1), xlim = c(0, maxsteps), cex = .2)
     for (i in 1:maxsteps)
     {
-      di = func(t = 1, state, pars, plantInt, harvInt, thinInt, enrichInt)
+      # because calculate the parameters many times get the app to be slow
+      # I try and save some time here removing the parameters calculation if
+      # growth is == straitgh (may optimze in a cleaner way)
+      if(growth == 'straight') {
+        di = func(t = 1, state, pars, plantInt, harvInt, thinInt, enrichInt)
+      }else {
+        pars <- get_pars(ENV1 = envGrowth[i], ENV2 = 0, params, int = 5)
+        di = func(t = 1, state, pars, plantInt, harvInt, thinInt, enrichInt)
+      }
       state = state + di[[1]]
       trace.mat[i+1,] = state
 
@@ -116,10 +137,10 @@ server <- function(input, output) {
   #  Function to run both solveEq and plot_solve functions - Dynamic
   ##########################################################################################
 
-  run_dynamic <- function(ENV1a, ENV1b, plantInt = 0, harvInt = 0, thinInt = 0, enrichInt = 0, plotLimit = NULL)
+  run_dynamic <- function(ENV1a, ENV1b, growth, plantInt = 0, harvInt = 0, thinInt = 0, enrichInt = 0, plotLimit = NULL)
   {
-    data <- solveEq(func = model_fm, init = eqBoreal, ENV1 = ENV1a, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
-    data1 <- solveEq(func = model_fm, init = eqBoreal, ENV1 = ENV1b, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
+    data <- solveEq(func = model_fm, ENV0 = -1.55, ENV1 = ENV1a, growth = growth, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
+    data1 <- solveEq(func = model_fm, ENV0 = -1.55, ENV1 = ENV1b, growth = growth, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
     plot_solve(data = data, data1 = data1, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit)
   }
 
@@ -127,13 +148,10 @@ server <- function(input, output) {
   #  Function to get summarized data using the solveEq function
   ##########################################################################################
 
-  solve_summary <- function(env1b, managPractices) {
+  solve_summary <- function(env1b, growth, managPractices) {
 
     # data frame to save solveEq output
     dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA), c('managInt', 'TRE', 'Ev', 'EqB', 'EqT', 'EqM', 'EqR'))
-
-    # get initial state proportion
-    eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
 
     # management practices
     managPrac <- list()
@@ -143,8 +161,8 @@ server <- function(input, output) {
 
     # solveEq for each management intensity
     for(i in 1:dim(dat)[1]) {
-
-      res <- solveEq(func = model_fm, init = eqBoreal, ENV1 = env1b,
+      res <- solveEq(func = model_fm, ENV0 = -1.55, ENV1 = env1b,
+                    growth,
                     plantInt = managPrac[[1]][i],
                     harvInt = managPrac[[2]][i],
                     thinInt = managPrac[[3]][i],
@@ -190,17 +208,15 @@ server <- function(input, output) {
   #  Function to run plot_summary
   ##########################################################################################
 
-  run_summary <- function(env1b, managPractices, ylimTRE = NULL, ylimEv = NULL) {
+  run_summary <- function(env1b, growth, managPractices, ylimTRE = NULL, ylimEv = NULL) {
 
-    dat <- solve_summary(env1b, managPractices)
+    dat <- solve_summary(env1b, growth, managPractices)
     plot_summary(dat, ylimTRE, ylimEv)
   }
 
   ##########################################################################################
   #  Output of shiny App for Panel 1 - Dynamic
   ##########################################################################################
-
-  eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
 
   output$dynamic <- renderPlot({
 
@@ -209,15 +225,13 @@ server <- function(input, output) {
     if(input$cc == 'RCP6') env1b = -0.7335
     if(input$cc == 'RCP8.5') env1b = -0.1772
 
-    run_dynamic(ENV1a = -1.55, ENV1b = env1b, plantInt = input$Plantation, harvInt = input$Harvest, thinInt = input$Thinning, enrichInt = input$Enrichement, plotLimit = input$plotLimit)
+    run_dynamic(ENV1a = -1.55, ENV1b = env1b, growth = input$growth, plantInt = input$Plantation, harvInt = input$Harvest, thinInt = input$Thinning, enrichInt = input$Enrichement, plotLimit = input$plotLimit)
 
     })
 
     ##########################################################################################
     #  Output of shiny App for Panel 2 - Summary
     ##########################################################################################
-
-    eqBoreal <- get_eq(get_pars(ENV1 = -1.55, ENV2 = 0, params, int = 5))[[1]]
 
     output$summary <- renderPlot({
 
@@ -247,12 +261,12 @@ server <- function(input, output) {
         ylimTRE = input$ylimTRE; ylimEv = input$ylimEv
       }
 
-      run_summary(env1b = env1b, managPractices = managP, ylimTRE = ylimTRE, ylimEv = ylimEv)
+      run_summary(env1b = env1b, growth = input$growth2, managPractices = managP, ylimTRE = ylimTRE, ylimEv = ylimEv)
 
       })
 
       output$error <- renderText({
-        if(is.null(input$managPractices)) warning('Select a managagement practice')
+        if(is.null(input$managPractices)) warning('Please, select at least one management practice')
       })
 
 }
