@@ -1,7 +1,7 @@
 library(shiny)
 
 # Define UI for app that draws a histogram ----
-ui <- fluidPage(
+ui <- fluidPage(theme = shinythemes::shinytheme("sandstone"),
 
 navbarPage("STM managed - v1.0",
 
