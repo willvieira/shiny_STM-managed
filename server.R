@@ -197,7 +197,7 @@ server <- function(input, output) {
 
     # Eq
     plot(dat$managInt, dat$EqB, col = stateColor[1], type = 'l', lwd = 2.1, ylim = c(0, 1), xlab = '', ylab = 'State proportion')
-    invisible(sapply(5:7, function(x) points(dat$managInt, dat[, x], type = 'l', col = stateColor[x-3], lwd = 2.1)))
+    invisible(sapply(6:8, function(x) points(dat$managInt, dat[, x], type = 'l', col = stateColor[x-4], lwd = 2.1)))
 
     # text
     mtext("Management intensity", 1, line = -1.8, outer = TRUE, cex = 1.5)
