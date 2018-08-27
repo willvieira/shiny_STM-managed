@@ -70,7 +70,7 @@ tabPanel("Dynamic",
           plotOutput(outputId = "dynamic"),
           #plotOutput(outputId = "test")
 
-          div(img(src='model_process.pdf', height = 350), style="text-align: center;")
+          div(img(src='model_pr.png', height = 350), style="text-align: center;")
         )
       )
     ),
@@ -130,7 +130,7 @@ tabPanel("Dynamic",
         mainPanel(
           h3(textOutput(outputId = "error")),
           plotOutput(outputId = "summary"),
-          div(img(src='model_process.pdf', height = 350), style="text-align: center;")
+          div(img(src='model_pr.png', height = 350), style="text-align: center;")
         )
       )
     ),
@@ -172,7 +172,7 @@ tabPanel("Dynamic",
         # Main panel for displaying outputs ----
         mainPanel(
           plotOutput(outputId = "cor"),
-          div(img(src='model_process.pdf', height = 350), style="text-align: center;")
+          div(img(src='model_pr.png', height = 350), style="text-align: center;")
         )
       )
     )
