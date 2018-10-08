@@ -1,13 +1,14 @@
 #################################
 # Define the model
 #################################
-model_fm = function(t, y, params, plantInt, harvInt, thinInt, enrichInt) {
-	with(as.list(c(y, params, plantInt, harvInt, thinInt, enrichInt)), {
+model_fm = function(t, y, params, management) {
+	with(as.list(c(y, params, management)), {
 
-		# management
-		naturalSuccession <- 1 - plantInt # plantation
-		naturalColonization <- 1 - enrichInt # enrichement planting
-		naturalHarvest <- 1 - harvInt
+		# management (1. plantation, 2. harvest, 3. thinning, 4. enrichement)
+		naturalSuccession <- 1 - management[1] # plantation
+		naturalColonization <- 1 - management[4] # enrichement planting
+		naturalHarvest <- 1 - management[2]
+
 		# Fraction of empty patches converted into the different states following a disturbance
 		pB = alphab * (B + M)
 		pT = alphat * (T + M)
@@ -19,9 +20,9 @@ model_fm = function(t, y, params, plantInt, harvInt, thinInt, enrichInt) {
 		R = 1 - B - T - M
 
 		# Differential equations describing the dynamics of the state variables
-		dBdt = pB_ * naturalSuccession * R + theta * (1 - thetat) * M - ((betat * (T + M) * naturalColonization) + enrichInt) * B - ((epsB * naturalHarvest) + harvInt) * B
-		dTdt = ((pT_ * naturalSuccession) + plantInt) * R + (theta * thetat + thinInt * (1 - theta)) * M - betab * (B + M) * T - epsT * T
-		dMdt = pM  * naturalSuccession * R + betab * (B + M) * T + ((betat * (T + M) * naturalColonization) + enrichInt) * B - (theta * (1 - thetat) + (theta * thetat + thinInt * (1 - theta))) * M - epsM * M
+		dBdt = pB_ * naturalSuccession * R + theta * (1 - thetat) * M - ((betat * (T + M) * naturalColonization) + management[4]) * B - ((epsB * naturalHarvest) + management[2]) * B
+		dTdt = ((pT_ * naturalSuccession) + management[1]) * R + (theta * thetat + management[3] * (1 - theta)) * M - betab * (B + M) * T - epsT * T
+		dMdt = pM  * naturalSuccession * R + betab * (B + M) * T + ((betat * (T + M) * naturalColonization) + management[4]) * B - (theta * (1 - thetat) + (theta * thetat + management[3] * (1 - theta))) * M - epsM * M
 		list(c(dBdt, dTdt, dMdt))
 		})
 	}
@@ -29,7 +30,7 @@ model_fm = function(t, y, params, plantInt, harvInt, thinInt, enrichInt) {
 #################################
 # Local stabilityr
 #################################
-get_eq_fm = function(params, y = NULL, plantInt, thinInt, enrichInt) {
+get_eq_fm = function(params, y = NULL, management) {
 
 	library(rootSolve)
 
@@ -39,10 +40,10 @@ get_eq_fm = function(params, y = NULL, plantInt, thinInt, enrichInt) {
 	}else(y = y)
 
 	# Get the equilibrium
-	eq = runsteady(y = y, func = model_fm, parms = params, plantInt = plantInt, thinInt = thinInt, enrichInt = enrichInt, times = c(0, 1000))
+	eq = runsteady(y = y, func = model_fm, parms = params, management = management, times = c(0, 1000))
 
 	# Compute the Jacobian
-	J = jacobian.full(y = eq[[1]], func = model_fm, parms = params, plantInt = plantInt, thinInt = thinInt, enrichInt = enrichInt)
+	J = jacobian.full(y = eq[[1]], func = model_fm, parms = params, management = management)
 
 	# Stability
 	ev = max(Re(eigen(J)$values)) #in case of complex eigenvalue, using Re to get the first real part
@@ -86,7 +87,7 @@ get_pars = function(ENV1, ENV2, params, int) {
 # COLLECT THE TRANSITION MATRIX
 #################################
 
-	get_matrix_fm = function(ENV1 = NULL, ENV2 = NULL, pars = NULL, eq = NULL, int = NULL) {
+	get_matrix_fm = function(ENV1 = NULL, ENV2 = NULL, pars = NULL, params = NULL, eq = NULL, int = NULL, management) {
 
 		if(is.null(int)) {
 			int = 3
@@ -95,7 +96,7 @@ get_pars = function(ENV1, ENV2, params, int) {
 			pars = get_pars(ENV1, ENV2, params = params, int = int)
 		}
 		if(is.null(eq)) {
-			eq = get_eq_fm(pars)[[1]]
+			eq = get_eq_fm(pars, management)[[1]]
 		}
 
 		MAT = matrix(nr = 4, nc = 4)
@@ -104,7 +105,7 @@ get_pars = function(ENV1, ENV2, params, int) {
 		T = eq[2]
 		M = eq[3]
 		R = 1 - B - M - T
-		names(R) <- "R" #Renaming R because it would get "B" name instanted
+		names(R) <- "R" #Renaming R because it would get "B" name instead
 
 		pB = pars["alphab"]*(B+M)
 		pT = pars["alphat"]*(T+M)
