@@ -28,7 +28,7 @@ tabPanel("Dynamic",
 
             radioButtons(inputId = "growth",
                         label = "Select the growth patern of climate change:",
-                        choices = c("straight", "linear", "exponential"), inline = T),
+                        choices = c("stepwise", "linear", "exponential"), inline = T),
 
           HTML("<font size='4'><b>Intensity of management practices<br></b></font><br>"),
 
@@ -98,7 +98,7 @@ tabPanel("Dynamic",
 
             radioButtons(inputId = "growth2",
                         label = "Select the growth patern of climate change:",
-                        choices = c("straight", "linear", "exponential"), inline = T),
+                        choices = c("stepwise", "linear", "exponential"), inline = T),
 
           HTML("<font size='4'><b>Management practices<br></b></font><br>"),
 
@@ -158,7 +158,7 @@ tabPanel("Dynamic",
 
             radioButtons(inputId = "growth3",
                         label = "Select the growth patern of climate change:",
-                        choices = c("straight", "linear", "exponential"), inline = T),
+                        choices = c("stepwise", "linear", "exponential"), inline = T),
 
           HTML("<font size='4'><b>Management practices<br></b></font><br>"),
 
