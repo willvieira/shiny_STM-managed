@@ -3,310 +3,86 @@ library(shiny)
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
 
-  # get the model versions
-  source("R/vissault_model_v3.R")
-  source("R/vissault_model_fm.R") # model with forest management integrated
-  # parameters
-  params = read.table("R/pars.txt", row.names = 1)
-
-  ##########################################################################################
-  #  Function to solve the model and get the trace matrix, TRE, Eq, deltaEq and eigenvalue
-  ##########################################################################################
-
-  solveEq <- function(func = model_fm, # = model
-                      ENV0, # = to get state at T0 ou y
-                      ENV1, # temperature
-                      growth = 'linear', # patern of climate change increase [straight, linear, exponential]
-                      plantInt = 0, # Intensity of plantation (in % [0-1])
-                      harvInt = 0, # Intensity of harvest (increasing the parameter in % [0-1])
-                      thinInt = 0, # Intensity of thinning (increasing the parameter in % [0-1])
-                      enrichInt = 0, # Intensity of enrichement planting (in % [0-1])
-                      plotLimit = 200, # limit to repeat the loast eq to avoid empty plot
-                      maxsteps = 1000) #maxsteps = 10000
-  {
-    library(rootSolve)
-
-    # get equilibrium for initial condition (ENV0)
-    init <- get_eq(get_pars(ENV1 = ENV0, ENV2 = 0, params, int = 5))[[1]]
-
-    # get pars depending on the growth mode
-    envDiff <- ENV1 - ENV0
-    if(growth == 'straight') {
-      pars <- get_pars(ENV1 = ENV1, ENV2 = 0, params, int = 5)
-    }else if(growth == 'linear') {
-      gwt <- 1:20 * envDiff/20 + ENV0
-      envGrowth <- c(ENV0, gwt, rep(gwt[20], maxsteps))
-    }else if(growth == 'exponential') {
-      gwt <- ENV0 * ((ENV1/ENV0)^(1/20*1:20))
-      envGrowth <- c(ENV0, gwt, rep(gwt[20], maxsteps))
-    }
-
-    nochange = 0
-
-    trace.mat = matrix(NA, ncol  = length(init), nrow = maxsteps+1)
-    trace.mat[1,] = c(init)
-    state = init
-    #plot(0, state[2], ylim = c(0,1), xlim = c(0, maxsteps), cex = .2)
-    for (i in 1:maxsteps)
-    {
-      # because calculate the parameters many times get the app to be slow
-      # I try and save some time here removing the parameters calculation if
-      # growth is == straitgh (may optimze in a cleaner way)
-      if(growth == 'straight') {
-        di = func(t = 1, state, pars, plantInt, harvInt, thinInt, enrichInt)
-      }else {
-        pars <- get_pars(ENV1 = envGrowth[i], ENV2 = 0, params, int = 5)
-        di = func(t = 1, state, pars, plantInt, harvInt, thinInt, enrichInt)
-      }
-      state = state + di[[1]]
-      trace.mat[i+1,] = state
-
-      if(sum(abs(trace.mat[i, ] - trace.mat[i-1, ])) < 1e-7) nochange = nochange+1
-
-      if(nochange >= 10) break;
-      #points(i,state[2], cex=.2)
-    }
-    trace.mat = trace.mat[1:i,]
-
-    TRE = i - 10
-
-    # repeat the last eq so the plot is not empty
-    if(dim(trace.mat)[1] < plotLimit) {
-      missing <- plotLimit - dim(trace.mat)[1]
-      trace.missing <- matrix(rep(trace.mat[dim(trace.mat)[1], ], missing), ncol = dim(trace.mat)[2], byrow = T)
-      trace.mat <- rbind(trace.mat, trace.missing)
-    }
-
-    # Compute the Jacobian
-    J = jacobian.full(y = state, func = model_fm, parms = pars, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt)
-
-    # Stability
-    ev = max(Re(eigen(J)$values)) #in case of complex eigenvalue, using Re to get the first real part
-
-    # Euclidean distance between initial and final state proportion
-    dst <- dist(rbind(init, state))
-
-    # time to reach equilibrium based in the deltaEq and eigenvalue
-    lDst <- dist(rbind(log(init), log(state)))
-    TREev <- lDst/ev
-
-    return(list(eq = state, mat = trace.mat, ev = ev, dst = dst, TREev = TREev, TRE = TRE))
-  }
-
-  ##########################################################################################
-  #  Function to plot the solved model - dynamic
-  ##########################################################################################
-
-  plot_solve <- function(data, data1, plotLimit = NULL, plantInt, harvInt, thinInt, enrichInt)
-  {
-
-    if(is.null(plotLimit)) {
-      xlim = c(0, max(c(dim(data[[2]])[1]), c(dim(data1[[2]])[1])))
-    }else{
-      xlim = c(0, plotLimit)
-    }
-
-    # add regenration state
-    data[[2]] <- cbind(data[[2]], apply(data[[2]], 1, function(x) 1-sum(x)))
-    data1[[2]] <- cbind(data1[[2]], apply(data1[[2]], 1, function(x) 1-sum(x)))
-
-    # legend
-    leg <- function(df) {
-      rp = vector('expression', 3)
-      rp[1] <- substitute(expression('Ev' == ev), list(ev = round(df[[3]], 3)))[2]
-      rp[2] <- substitute(expression(Delta ~ Eq == dEq), list(dEq = round(df[[4]], 3)))[2]
-      rp[3] <- substitute(expression(Delta ~ Eq/Ev == TREev), list(TREev = round(df[[5]], 3)))[2]
-      rp[4] <- substitute(expression('TRE' == TRE), list(TRE = df[[6]]))[2]
-      return(rp)
-    }
-
-    # state color
-    stateColor <- setNames(c(rgb(0.15,	0.55, 0.54), rgb(0.98, 0.63, 0.22), rgb(0.53, 0.79, 0.51), 'black'), c('Boreal', 'Temperate', 'Mixed', 'Regeneration'))
-
-    #  plot
-    par(mfrow = c(1, 2), cex = 1.4, mar = c(4,3,4,2), mgp = c(1.5, 0.3, 0), tck = -.008)
-    plot(data[[2]][, 1], type = "l", col = stateColor[1], ylim = c(0, 1), xlim = xlim, xlab = "", ylab = "State proportion", lwd = 2.1)
-    invisible(sapply(2:4, function(x) lines(data[[2]][, x], col = stateColor[x], lwd = 2.1)))
-    mtext("Before Climate change", 3, line = .4, cex = 1.3)
-    legend("topright", legend = leg(data), bty = "n")
-
-    plot(data1[[2]][, 1], type = "l", col = stateColor[1], ylim = c(0, 1), xlim = xlim, xlab = "", ylab = "", lwd = 2.1)
-    invisible(sapply(2:4, function(x) lines(data1[[2]][, x], col = stateColor[x], lwd = 2.1)))
-    mtext("After Climate change", 3, line = .4, cex = 1.3)
-    mtext("Time (year * 5)", 1, line = -1.8, outer = TRUE, cex = 1.5)
-    legend("topright", legend = leg(data1), bty = "n")
-    mtext(paste0('Plantation = ', plantInt, '; Harvest = ', harvInt, '; Thinning = ', thinInt, '; Enrich = ', enrichInt), side = 3, line = -2.5, cex = 1.5, outer = TRUE)
-  }
-
-  ##########################################################################################
-  #  Function to run both solveEq and plot_solve functions - Dynamic
-  ##########################################################################################
-
-  run_dynamic <- function(ENV1a, ENV1b, growth, plantInt = 0, harvInt = 0, thinInt = 0, enrichInt = 0, plotLimit = NULL)
-  {
-    data <- solveEq(func = model_fm, ENV0 = -1.55, ENV1 = ENV1a, growth = growth, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
-    data1 <- solveEq(func = model_fm, ENV0 = -1.55, ENV1 = ENV1b, growth = growth, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit, maxsteps = 10000)
-    plot_solve(data = data, data1 = data1, plantInt = plantInt, harvInt = harvInt, thinInt = thinInt, enrichInt = enrichInt, plotLimit)
-  }
-
-  ##########################################################################################
-  #  Function to get summarized data using the solveEq function
-  ##########################################################################################
-
-  solve_summary <- function(env1b, growth, managPractices) {
-
-    # data frame to save solveEq output
-    dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA, NA), c('managInt', 'TRE', 'Dis', 'Ev', 'EqB', 'EqT', 'EqM', 'EqR'))
-
-    # management practices
-    managPrac <- list()
-    for(i in 1:4) {
-      managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
-    }
-
-    # solveEq for each management intensity
-    for(i in 1:dim(dat)[1]) {
-      res <- solveEq(func = model_fm, ENV0 = -1.55, ENV1 = env1b,
-                    growth,
-                    plantInt = managPrac[[1]][i],
-                    harvInt = managPrac[[2]][i],
-                    thinInt = managPrac[[3]][i],
-                    enrichInt = managPrac[[4]][i])
-
-      dat[i, c(5: 8)] <- c(res[['eq']], 1 - sum(res[['eq']]))
-      dat[i, c(2, 3, 4)] <- c(res[['TRE']], res[['dst']], res[['ev']])
-
-    }
-
-    return(dat)
-
-  }
-
-  ##########################################################################################
-  #  Function to plot solve_summary
-  ##########################################################################################
-
-  plot_summary <- function(dat, ylimTRE = NULL, ylimEv = NULL) {
-
-    # state color
-    stateColor <- setNames(c(rgb(0.15,	0.55, 0.54), rgb(0.98, 0.63, 0.22), rgb(0.53, 0.79, 0.51), 'black'), c('Boreal', 'Temperate', 'Mixed', 'Regeneration'))
-
-    # plots
-    par(mfrow = c(1, 3), cex = 1.4, mar = c(4,3,3,1), mgp = c(1.5, 0.3, 0), tck = -.008)
-
-    # TRE
-    plot(dat$managInt, dat$TRE, type = 'l', lwd = 2.1, ylim = ylimTRE, xlab = '', ylab = 'Time to reach equilibrium (year * 5)')
-
-    # Ev
-    plot(dat$managInt, dat$Ev, type = 'l', lwd = 2.1, ylim = ylimEv, xlab = '', ylab = 'Largest eigenvalue')
-
-    # Eq
-    plot(dat$managInt, dat$EqB, col = stateColor[1], type = 'l', lwd = 2.1, ylim = c(0, 1), xlab = '', ylab = 'State proportion')
-    invisible(sapply(6:8, function(x) points(dat$managInt, dat[, x], type = 'l', col = stateColor[x-4], lwd = 2.1)))
-
-    # text
-    mtext("Management intensity", 1, line = -1.8, outer = TRUE, cex = 1.5)
-
-  }
-
-  ##########################################################################################
-  #  Function to run plot_summary
-  ##########################################################################################
-
-  run_summary <- function(env1b, growth, managPractices, ylimTRE = NULL, ylimEv = NULL) {
-
-    dat <- solve_summary(env1b, growth, managPractices)
-    plot_summary(dat, ylimTRE, ylimEv)
-  }
-
-  ##########################################################################################
-  #  Function to plot output correlation
-  ##########################################################################################
-
-  outputCor <- function(env1b, growth, managPractices) {
-
-    dat <- solve_summary(env1b, growth, managPractices)
-    par(mfrow = c(1, 3), cex = 1.4, mar = c(4,3,3,2), mgp = c(1.5, 0.3, 0), tck = -.008)
-    plot(dat$Ev, dat$TRE, type = 'l', lwd = 2.1, xlab = 'Largest real part', ylab = 'Time to reach equilibrium')
-    plot(dat$Dis, dat$TRE, type = 'l', lwd = 2.1, xlab = 'DeltaEq', ylab = 'Time to reach equilibrium')
-    plot(dat$Dis, dat$Ev, type = 'l', lwd = 2.1, xlab = 'DeltaEq', ylab = 'Largest real part')
-  }
+  # get the model and functions
+  file.sources <- dir('R/')
+  invisible(sapply(paste0('R/', file.sources), source))
 
   ##########################################################################################
   #  Output of shiny App for Panel 1 - Dynamic
   ##########################################################################################
 
-  output$dynamic <- renderPlot({
-
+  output$dynamic <- renderPlot(
+  {
     # CC scenarios
     if(input$cc == 'RCP4.5') env1b = -0.882
     if(input$cc == 'RCP6') env1b = -0.7335
     if(input$cc == 'RCP8.5') env1b = -0.1772
 
-    run_dynamic(ENV1a = -1.55, ENV1b = env1b, growth = input$growth, plantInt = input$Plantation, harvInt = input$Harvest, thinInt = input$Thinning, enrichInt = input$Enrichement, plotLimit = input$plotLimit)
+    management <- c(input$Plantation, input$Harvest, input$Thinning, input$Enrichement)
 
-    })
+    run_dynamic(ENV1a = -1.55, ENV1b = env1b, growth = input$growth, management = management, plotLimit = input$plotLimit)
+  })
 
-    ##########################################################################################
-    #  Output of shiny App for Panel 2 - Summary
-    ##########################################################################################
+  ##########################################################################################
+  #  Output of shiny App for Panel 2 - Summary
+  ##########################################################################################
 
-    output$summary <- renderPlot({
+  output$summary <- renderPlot(
+  {
+    # CC scenarios
+    if(input$cc2 == '0') env1b = -1.55
+    if(input$cc2 == 'RCP4.5') env1b = -0.882
+    if(input$cc2 == 'RCP6') env1b = -0.7335
+    if(input$cc2 == 'RCP8.5') env1b = -0.1772
 
-      # CC scenarios
-      if(input$cc2 == '0') env1b = -1.55
-      if(input$cc2 == 'RCP4.5') env1b = -0.882
-      if(input$cc2 == 'RCP6') env1b = -0.7335
-      if(input$cc2 == 'RCP8.5') env1b = -0.1772
-
-      # management practices
-      managP <- rep(0, 4)
-      for(i in 1:length(input$managPractices)) {
-        if(input$managPractices[i] == 1) {
-          managP[1] = 1
-        }else if(input$managPractices[i] == 2) {
-          managP[2] = 1
-        }else if(input$managPractices[i] == 3) {
-          managP[3] = 1
-        }else if(input$managPractices[i] == 4) {
-          managP[4] = 1
-        }
+    # management practices
+    managP <- rep(0, 4)
+    for(i in 1:length(input$managPractices)) {
+      if(input$managPractices[i] == 1) {
+        managP[1] = 1
+      }else if(input$managPractices[i] == 2) {
+        managP[2] = 1
+      }else if(input$managPractices[i] == 3) {
+        managP[3] = 1
+      }else if(input$managPractices[i] == 4) {
+        managP[4] = 1
       }
+    }
 
-      if(input$ylimNull == FALSE) {
-        ylimTRE = NULL; ylimEv = NULL
-      }else {
-        ylimTRE = input$ylimTRE; ylimEv = input$ylimEv
-      }
+    if(input$ylimNull == FALSE) {
+      ylimTRE = NULL; ylimEv = NULL
+    }else {
+      ylimTRE = input$ylimTRE; ylimEv = input$ylimEv
+    }
 
-      run_summary(env1b = env1b, growth = input$growth2, managPractices = managP, ylimTRE = ylimTRE, ylimEv = ylimEv)
+    run_summary(env1b = env1b, growth = input$growth2, managPractices = managP, ylimTRE = ylimTRE, ylimEv = ylimEv)
 
-      })
+  })
 
-      output$error <- renderText({
-        if(is.null(input$managPractices)) warning('Please, select at least one management practice')
-      })
+  output$error <- renderText(
+  {
+    if(is.null(input$managPractices)) warning('Please, select at least one management practice')
+  })
 
-      ##########################################################################################
-      #  Output of shiny App for Panel 3 - Output correlation
-      ##########################################################################################
+  ##########################################################################################
+  #  Output of shiny App for Panel 3 - Output correlation
+  ##########################################################################################
 
-      output$cor <- renderPlot({
+  output$cor <- renderPlot(
+  {
+    # CC scenarios
+    if(input$cc3 == '0') env1b = -1.55
+    if(input$cc3 == 'RCP4.5') env1b = -0.882
+    if(input$cc3 == 'RCP6') env1b = -0.7335
+    if(input$cc3 == 'RCP8.5') env1b = -0.1772
 
-        # CC scenarios
-        if(input$cc3 == '0') env1b = -1.55
-        if(input$cc3 == 'RCP4.5') env1b = -0.882
-        if(input$cc3 == 'RCP6') env1b = -0.7335
-        if(input$cc3 == 'RCP8.5') env1b = -0.1772
+    # management practices
+    if(input$managPractices2 == 'Plantation') managP2 = c(1, 0, 0, 0)
+    if(input$managPractices2 == 'Harvest') managP2 = c(0, 1, 0, 0)
+    if(input$managPractices2 == 'Thinning') managP2 = c(0, 0, 1, 0)
+    if(input$managPractices2 == 'Enrichement planting') managP2 = c(0, 0, 0, 1)
 
-        # management practices
-        if(input$managPractices2 == 'Plantation') managP2 = c(1, 0, 0, 0)
-        if(input$managPractices2 == 'Harvest') managP2 = c(0, 1, 0, 0)
-        if(input$managPractices2 == 'Thinning') managP2 = c(0, 0, 1, 0)
-        if(input$managPractices2 == 'Enrichement planting') managP2 = c(0, 0, 0, 1)
+    plot_outputCor(env1b = env1b, growth = input$growth3, managPractices = managP2)
 
-        outputCor(env1b = env1b, growth = input$growth3, managPractices = managP2)
-
-        })
-
+  })
 }
