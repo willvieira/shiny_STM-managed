@@ -67,7 +67,7 @@ tabPanel("Dynamic",
         mainPanel(
 
           # Output
-          plotOutput(outputId = "dynamic"),
+          plotOutput(outputId = "dynamic", height = 430),
           #plotOutput(outputId = "test")
 
           div(img(src='model_pr.png', height = 350), style="text-align: center;")

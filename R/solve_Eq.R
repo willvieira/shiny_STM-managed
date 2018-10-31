@@ -8,7 +8,7 @@ solve_Eq <- function(func = model_fm, # = model
                     growth = 'linear', # patern of climate change increase [stepwise, linear, exponential]
                     management = c(0, 0, 0, 0), # intensity of management (in % [0-1]) order: plantation, harvest, thinning, enrichmenet
                     plotLimit = 200, # limit to repeat the loast eq to avoid empty plot
-                    maxsteps = 1000) #maxsteps = 10000
+                    maxsteps = 10000) #maxsteps = 10000
 {
   library(rootSolve)
 
@@ -57,7 +57,11 @@ solve_Eq <- function(func = model_fm, # = model
   }
   trace.mat = trace.mat[1:i,]
 
-  TRE = i - 10
+  # Time to reach equilibrium
+  deltaTime = i - 10
+
+  # Cumulative changes in state
+  integral <- sum(abs(sweep(trace.mat, 2, state, "-")))
 
   # repeat the last eq so the plot is not empty after reaching equilibrium
   if(dim(trace.mat)[1] < plotLimit) {
@@ -69,15 +73,15 @@ solve_Eq <- function(func = model_fm, # = model
   # Compute the Jacobian
   J = jacobian.full(y = state, func = model_fm, parms = pars, management = management)
 
-  # Stability
-  ev = max(Re(eigen(J)$values)) #in case of complex eigenvalue, using Re to get the first real part
+  # Asymptotic resilience (local stability)
+  R_inf = max(Re(eigen(J)$values)) #in case of complex eigenvalue, using Re to get the real part
+
+  # Initial resilience (reactivity)
+  M = (J + t(J))/2
+  R_init = max(eigen(M)$values)
 
   # Euclidean distance between initial and final state proportion
-  dst <- dist(rbind(init, state))
+  deltaState <- dist(rbind(init, state))
 
-  # time to reach equilibrium based in the deltaEq and eigenvalue
-  lDst <- dist(rbind(log(init), log(state)))
-  TREev <- lDst/ev
-
-  return(list(eq = state, mat = trace.mat, ev = ev, dst = dst, TREev = TREev, TRE = TRE))
+  return(list(eq = state, mat = trace.mat, R_inf = R_inf, deltaState = deltaState, deltaTime = deltaTime, R_init = R_init, integral = integral))
 }

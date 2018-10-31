@@ -16,11 +16,12 @@ plot_solve <- function(data, data1, plotLimit = NULL, management)
 
   # legend
   leg <- function(df) {
-    rp = vector('expression', 3)
-    rp[1] <- substitute(expression('Ev' == ev), list(ev = round(df[[3]], 3)))[2]
-    rp[2] <- substitute(expression(Delta ~ Eq == dEq), list(dEq = round(df[[4]], 3)))[2]
-    rp[3] <- substitute(expression(Delta ~ Eq/Ev == TREev), list(TREev = round(df[[5]], 3)))[2]
-    rp[4] <- substitute(expression('TRE' == TRE), list(TRE = df[[6]]))[2]
+    rp = vector('expression', 5)
+    rp[1] <- substitute(expression('R'[infinity] == R_inf), list(R_inf = round(df[['R_inf']], 3)))[2]
+    rp[2] <- substitute(expression('-R'[0] == R0), list(R0 = round(df[['R_init']], 3)))[2]
+    rp[3] <- substitute(expression(Delta ['State'] == dS), list(dS = round(df[['deltaState']], 3)))[2]
+    rp[4] <- substitute(expression(Delta ['Time'] == dT), list(dT = df[['deltaTime']]))[2]
+    rp[5] <- substitute(expression(''[integral(S(t)*dt)]  == Int), list(Int = round(df[['integral']], 3)))[2]
     return(rp)
   }
 

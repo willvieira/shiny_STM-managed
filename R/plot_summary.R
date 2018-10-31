@@ -10,13 +10,13 @@ plot_summary <- function(dat, ylimTRE = NULL, ylimEv = NULL)
   # plots
   par(mfrow = c(1, 3), cex = 1.4, mar = c(4,3,3,1), mgp = c(1.5, 0.3, 0), tck = -.008)
 
-  # TRE
-  plot(dat$managInt, dat$TRE, type = 'l', lwd = 2.1, ylim = ylimTRE, xlab = '', ylab = 'Time to reach equilibrium (year * 5)')
+  # detalTime
+  plot(dat$managInt, dat$deltaTime, type = 'l', lwd = 2.1, ylim = ylimTRE, xlab = '', ylab = 'Time to reach equilibrium (year * 5)')
 
-  # Ev
-  plot(dat$managInt, dat$Ev, type = 'l', lwd = 2.1, ylim = ylimEv, xlab = '', ylab = 'Largest eigenvalue')
+  # R_infinity
+  plot(dat$managInt, dat$R_inf, type = 'l', lwd = 2.1, ylim = ylimEv, xlab = '', ylab = 'Largest eigenvalue')
 
-  # Eq
+  # Equilibrium
   plot(dat$managInt, dat$EqB, col = stateColor[1], type = 'l', lwd = 2.1, ylim = c(0, 1), xlab = '', ylab = 'State proportion')
   invisible(sapply(6:8, function(x) points(dat$managInt, dat[, x], type = 'l', col = stateColor[x-4], lwd = 2.1)))
 

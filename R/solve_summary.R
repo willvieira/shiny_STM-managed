@@ -5,7 +5,7 @@
 solve_summary <- function(env1b, growth, managPractices)
 {
   # data frame to save solveEq output
-  dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA, NA), c('managInt', 'TRE', 'Dis', 'Ev', 'EqB', 'EqT', 'EqM', 'EqR'))
+  dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA, NA), c('managInt', 'deltaTime', 'Dis', 'R_inf', 'EqB', 'EqT', 'EqM', 'EqR'))
 
   # management practices
   managPrac <- list()
@@ -23,7 +23,7 @@ solve_summary <- function(env1b, growth, managPractices)
                     management = management)
 
     dat[i, c(5: 8)] <- c(res[['eq']], 1 - sum(res[['eq']]))
-    dat[i, c(2, 3, 4)] <- c(res[['TRE']], res[['dst']], res[['ev']])
+    dat[i, c(2, 3, 4)] <- c(res[['deltaTime']], res[['deltaState']], res[['R_inf']])
 
   }
   return(dat)
