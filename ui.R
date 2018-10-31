@@ -170,8 +170,7 @@ navbarPage("STM managed - v1.0",
 
         # Main panel for displaying outputs ----
         mainPanel(
-          plotOutput(outputId = "cor"),
-          div(img(src='model_pr.png', height = 350), style="text-align: center;")
+          plotOutput(outputId = "cor", height = 1800)
         )
       )
     )
