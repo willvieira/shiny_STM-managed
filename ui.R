@@ -5,11 +5,11 @@ ui <- fluidPage(theme = shinythemes::shinytheme("sandstone"),
 
 navbarPage("STM managed - v1.0",
 
-##########################################################################################
-#  Panel 1 - Dynamic
-##########################################################################################
+  ##########################################################################################
+  #  Panel 1 - Dynamic
+  ##########################################################################################
 
-tabPanel("Dynamic",
+  tabPanel("Dynamic",
 
   # App title ----
   titlePanel("Effect of forest management in the migration rate of the eastern North American forest"),
@@ -129,8 +129,7 @@ tabPanel("Dynamic",
         # Main panel for displaying outputs ----
         mainPanel(
           h3(textOutput(outputId = "error")),
-          plotOutput(outputId = "summary"),
-          div(img(src='model_pr.png', height = 350), style="text-align: center;")
+          plotOutput(outputId = "summary", height = 650)
         )
       )
     ),

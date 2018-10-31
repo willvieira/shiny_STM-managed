@@ -5,12 +5,12 @@
 solve_summary <- function(env1b, growth, managPractices)
 {
   # data frame to save solveEq output
-  dat <- setNames(data.frame(seq(0, 1, length.out = 30), NA, NA, NA, NA, NA, NA, NA), c('managInt', 'deltaTime', 'Dis', 'R_inf', 'EqB', 'EqT', 'EqM', 'EqR'))
+  dat <- setNames(data.frame(seq(0, 1, length.out = 40), NA, NA, NA, NA, NA, NA, NA, NA, NA), c('managInt', 'deltaTime', 'deltaState', 'R_inf', 'R_init', 'integral', 'EqB', 'EqT', 'EqM', 'EqR'))
 
   # management practices
   managPrac <- list()
   for(i in 1:4) {
-    managPrac[[i]] <- seq(0, managPractices[i], length.out = 30)
+    managPrac[[i]] <- seq(0, managPractices[i], length.out = 40)
   }
 
   # solveEq for each management intensity
@@ -22,8 +22,8 @@ solve_summary <- function(env1b, growth, managPractices)
                     growth,
                     management = management)
 
-    dat[i, c(5: 8)] <- c(res[['eq']], 1 - sum(res[['eq']]))
-    dat[i, c(2, 3, 4)] <- c(res[['deltaTime']], res[['deltaState']], res[['R_inf']])
+    dat[i, c('EqB', 'EqT', 'EqM', 'EqR')] <- c(res[['eq']], 1 - sum(res[['eq']]))
+    dat[i, c('deltaTime', 'deltaState', 'R_inf', 'R_init', 'integral')] <- c(res[['deltaTime']], res[['deltaState']], res[['R_inf']], res[['R_init']], res[['integral']])
 
   }
   return(dat)
