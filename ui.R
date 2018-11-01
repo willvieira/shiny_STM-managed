@@ -3,7 +3,7 @@ library(shiny)
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(theme = shinythemes::shinytheme("sandstone"),
 
-navbarPage("STM managed - v1.0",
+navbarPage("STM managed - v2.0",
 
   ##########################################################################################
   #  Panel 1 - Dynamic
