@@ -50,12 +50,12 @@ server <- function(input, output) {
     }
 
     if(input$ylimNull == FALSE) {
-      ylimTRE = NULL; ylimEv = NULL
+      ylim <- rep(list(NULL), 5)
     }else {
-      ylimTRE = input$ylimTRE; ylimEv = input$ylimEv
+      ylim = list(input$ylimDeltaState, input$ylimDeltaTime, input$ylimR_infinity, input$ylimR_init, input$ylimIntegral)
     }
 
-    run_summary(env1b = env1b, growth = input$growth2, managPractices = managP, ylimTRE = ylimTRE, ylimEv = ylimEv)
+    run_summary(env1b = env1b, growth = input$growth2, managPractices = managP, ylim = ylim)
 
   })
 

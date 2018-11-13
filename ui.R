@@ -93,7 +93,7 @@ navbarPage("STM managed - v2.0",
             # Input: Selector for choosing dataset ----
             radioButtons(inputId = "cc2",
                         label = "Select the RCP:",
-                        choices = c("0", "RCP4.5", "RCP6", "RCP8.5"),
+                        choices = c("0", "RCP4.5", "RCP6", "RCP8.5"), inline = T,
                         selected = "RCP4.5"),
 
             radioButtons(inputId = "growth2",
@@ -107,23 +107,44 @@ navbarPage("STM managed - v2.0",
                                c("Plantation" = 1,
                                  "Harvest" = 2,
                                  "Thinning" = 3,
-                                 "Enrichement planting" = 4)),
+                                 "Enrichement" = 4), inline = T),
 
            HTML("<font size='4'><b>Fixed limit of y axis<br></b></font><br>"),
 
-             checkboxInput("ylimNull", "Manual change of axis limit", FALSE),
+             checkboxInput("ylimNull", "Manual change of Y axis", FALSE),
 
-             sliderInput(inputId = "ylimTRE",
-                         label = "ylim for time to reach equilibrium",
+             sliderInput(inputId = "ylimDeltaState",
+                         withMathJax(label = "$$\\Delta state$$"),
                          min = 0,
-                         max = 900,
-                         value = c(40, 180)),
+                         max = 2,
+                         step = 0.01,
+                         value = c(1, 1.3)),
 
-             sliderInput(inputId = "ylimEv",
-                         label = "ylim for eigenvalue",
-                         min = -0.5,
+             sliderInput(inputId = "ylimDeltaTime",
+                         withMathJax(label = "$$\\Delta time$$"),
+                         min = 0,
+                         max = 300,
+                         value = c(30, 280)),
+
+             sliderInput(inputId = "ylimR_infinity",
+                         withMathJax(label = "$$-R_{\\infty}$$"),
+                         min = -0.6,
                          max = 0,
-                         value = c(-0.4, 0))
+                         step = 0.01,
+                         value = c(-0.5, -0.05)),
+
+             sliderInput(inputId = "ylimR_init",
+                         withMathJax(label = "$$-R_{0}$$"),
+                         min = -0.3,
+                         max = 0.5,
+                         step = 0.01,
+                         value = c(-0.2, 0.4)),
+
+             sliderInput(inputId = "ylimIntegral",
+                         withMathJax(label = "$$\\int S(t)dt$$"),
+                         min = 0,
+                         max = 180,
+                         value = c(5, 165))
         ),
 
         # Main panel for displaying outputs ----
