@@ -2,9 +2,9 @@
 #  Function to plot output correlation
 ##########################################################################################
 
-plot_outputCor <- function(env1b, growth, managPractices)
+plot_outputCor <- function(env1a, env1b, growth, managPractices)
 {
-  dat <- solve_summary(env1b, growth, managPractices)
+  dat <- solve_summary(env1a, env1b, growth, managPractices)
   par(mfrow = c(5, 2), cex = 1.4, mar = c(3.5,3.35,0.1,1), mgp = c(1.5, 0.3, 0), tck = -.008)
 
   labs <- c(expression(Delta ['state']),

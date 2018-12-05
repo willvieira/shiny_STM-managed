@@ -2,7 +2,7 @@
 #  Function to get summarized data using the solveEq function
 ##########################################################################################
 
-solve_summary <- function(env1b, growth, managPractices)
+solve_summary <- function(env1a, env1b, growth, managPractices)
 {
   # data frame to save solveEq output
   dat <- setNames(data.frame(seq(0, 1, length.out = 40), NA, NA, NA, NA, NA, NA, NA, NA, NA), c('managInt', 'deltaTime', 'deltaState', 'R_inf', 'R_init', 'integral', 'EqB', 'EqT', 'EqM', 'EqR'))
@@ -18,7 +18,7 @@ solve_summary <- function(env1b, growth, managPractices)
   {
     # create management vector from managPrac list
     management = c(managPrac[[1]][i], managPrac[[2]][i], managPrac[[3]][i], managPrac[[4]][i])
-    res <- solve_Eq(func = model_fm, ENV0 = -1.55, ENV1 = env1b,
+    res <- solve_Eq(func = model_fm, ENV1a = env1a, ENV1 = env1b,
                     growth,
                     management = management)
 

@@ -95,6 +95,10 @@ navbarPage("STM managed - v2.1",
 
           HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
             # Input: Selector for choosing dataset ----
+            radioButtons(inputId = "latitude2",
+                        label = "Select the latitudinal position:",
+                        choices = c("Boreal", "Mixed"), inline = T),
+
             radioButtons(inputId = "cc2",
                         label = "Select the RCP:",
                         choices = c("0", "RCP4.5", "RCP6", "RCP8.5"), inline = T,
@@ -175,6 +179,10 @@ navbarPage("STM managed - v2.1",
 
           HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
             # Input: Selector for choosing dataset ----
+            radioButtons(inputId = "latitude3",
+                        label = "Select the latitudinal position:",
+                        choices = c("Boreal", "Mixed"), inline = T),
+
             radioButtons(inputId = "cc3",
                         label = "Select the RCP:",
                         choices = c("0", "RCP4.5", "RCP6", "RCP8.5"),

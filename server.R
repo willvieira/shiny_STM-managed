@@ -39,11 +39,22 @@ server <- function(input, output) {
 
   output$summary <- renderPlot(
   {
+    # latitudinal position
+    if(input$latitude2 == 'Boreal') env1a = -1.55
+    if(input$latitude2 == 'Mixed') env1a = -.5
+
     # CC scenarios
-    if(input$cc2 == '0') env1b = -1.55
-    if(input$cc2 == 'RCP4.5') env1b = -0.882
-    if(input$cc2 == 'RCP6') env1b = -0.7335
-    if(input$cc2 == 'RCP8.5') env1b = -0.1772
+    if(env1a == -1.55) {
+      if(input$cc2 == '0') env1b = -1.55
+      if(input$cc2 == 'RCP4.5') env1b = -0.882
+      if(input$cc2 == 'RCP6') env1b = -0.7335
+      if(input$cc2 == 'RCP8.5') env1b = -0.1772
+    }else{
+      if(input$cc2 == '0') env1b = -.5
+      if(input$cc2 == 'RCP4.5') env1b = 0.168
+      if(input$cc2 == 'RCP6') env1b = 0.316
+      if(input$cc2 == 'RCP8.5') env1b = 0.873
+    }
 
     # management practices
     managP <- rep(0, 4)
@@ -65,7 +76,7 @@ server <- function(input, output) {
       ylim = list(input$ylimDeltaState, input$ylimDeltaTime, input$ylimR_infinity, input$ylimR_init, input$ylimIntegral)
     }
 
-    run_summary(env1b = env1b, growth = input$growth2, managPractices = managP, ylim = ylim)
+    run_summary(env1a = env1a, env1b = env1b, growth = input$growth2, managPractices = managP, ylim = ylim)
 
   })
 
@@ -80,11 +91,22 @@ server <- function(input, output) {
 
   output$cor <- renderPlot(
   {
+    # latitudinal position
+    if(input$latitude3 == 'Boreal') env1a = -1.55
+    if(input$latitude3 == 'Mixed') env1a = -.5
+
     # CC scenarios
-    if(input$cc3 == '0') env1b = -1.55
-    if(input$cc3 == 'RCP4.5') env1b = -0.882
-    if(input$cc3 == 'RCP6') env1b = -0.7335
-    if(input$cc3 == 'RCP8.5') env1b = -0.1772
+    if(env1a == -1.55) {
+      if(input$cc3 == '0') env1b = -1.55
+      if(input$cc3 == 'RCP4.5') env1b = -0.882
+      if(input$cc3 == 'RCP6') env1b = -0.7335
+      if(input$cc3 == 'RCP8.5') env1b = -0.1772
+    }else{
+      if(input$cc3 == '0') env1b = -.5
+      if(input$cc3 == 'RCP4.5') env1b = 0.168
+      if(input$cc3 == 'RCP6') env1b = 0.316
+      if(input$cc3 == 'RCP8.5') env1b = 0.873
+    }
 
     # management practices
     if(input$managPractices2 == 'Plantation') managP2 = c(1, 0, 0, 0)
@@ -92,7 +114,7 @@ server <- function(input, output) {
     if(input$managPractices2 == 'Thinning') managP2 = c(0, 0, 1, 0)
     if(input$managPractices2 == 'Enrichement planting') managP2 = c(0, 0, 0, 1)
 
-    plot_outputCor(env1b = env1b, growth = input$growth3, managPractices = managP2)
+    plot_outputCor(env1a = env1a, env1b = env1b, growth = input$growth3, managPractices = managP2)
 
   })
 }
