@@ -13,14 +13,24 @@ server <- function(input, output) {
 
   output$dynamic <- renderPlot(
   {
+    # latitudinal position
+    if(input$latitude == 'Boreal') env1a = -1.55
+    if(input$latitude == 'Mixed') env1a = -.5
+
     # CC scenarios
-    if(input$cc == 'RCP4.5') env1b = -0.882
-    if(input$cc == 'RCP6') env1b = -0.7335
-    if(input$cc == 'RCP8.5') env1b = -0.1772
+    if(env1a == -1.55) {
+      if(input$cc == 'RCP4.5') env1b = -0.882
+      if(input$cc == 'RCP6') env1b = -0.7335
+      if(input$cc == 'RCP8.5') env1b = -0.1772
+    }else{
+      if(input$cc == 'RCP4.5') env1b = 0.168
+      if(input$cc == 'RCP6') env1b = 0.316
+      if(input$cc == 'RCP8.5') env1b = 0.873
+    }
 
     management <- c(input$Plantation, input$Harvest, input$Thinning, input$Enrichement)
 
-    run_dynamic(ENV1a = -1.55, ENV1b = env1b, growth = input$growth, management = management, plotLimit = input$plotLimit)
+    run_dynamic(ENV1a = env1a, ENV1b = env1b, growth = input$growth, management = management, plotLimit = input$plotLimit)
   })
 
   ##########################################################################################

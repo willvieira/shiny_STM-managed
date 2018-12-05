@@ -3,8 +3,8 @@
 ##########################################################################################
 
 solve_Eq <- function(func = model_fm, # = model
-                    ENV0, # = to get state at T0 ou y
-                    ENV1, # temperature
+                    ENV1a, # = to get state at T0 ou y
+                    ENV1b, # temperature
                     growth = 'linear', # patern of climate change increase [stepwise, linear, exponential]
                     management = c(0, 0, 0, 0), # intensity of management (in % [0-1]) order: plantation, harvest, thinning, enrichmenet
                     plotLimit = 200, # limit to repeat the loast eq to avoid empty plot
@@ -15,19 +15,19 @@ solve_Eq <- function(func = model_fm, # = model
   # parameters
   params = read.table("data/pars.txt", row.names = 1)
 
-  # get equilibrium for initial condition (ENV0)
-  init <- get_eq(get_pars(ENV1 = ENV0, ENV2 = 0, params, int = 5))[[1]]
+    # get equilibrium for initial condition (ENV1a)
+  init <- get_eq(get_pars(ENV1 = ENV1a, ENV2 = 0, params, int = 5))[[1]]
 
   # get pars depending on the growth mode
-  envDiff <- ENV1 - ENV0
+  envDiff <- ENV1b - ENV1a
   if(growth == 'stepwise') {
-    pars <- get_pars(ENV1 = ENV1, ENV2 = 0, params, int = 5)
+    pars <- get_pars(ENV1 = ENV1b, ENV2 = 0, params, int = 5)
   }else if(growth == 'linear') {
-    gwt <- 1:20 * envDiff/20 + ENV0
-    envGrowth <- c(ENV0, gwt, rep(gwt[20], maxsteps))
+    gwt <- 1:20 * envDiff/20 + ENV1a
+    envGrowth <- c(ENV1a, gwt, rep(gwt[20], maxsteps))
   }else if(growth == 'exponential') {
-    gwt <- ENV0 * ((ENV1/ENV0)^(1/20*1:20))
-    envGrowth <- c(ENV0, gwt, rep(gwt[20], maxsteps))
+    gwt <- ENV1a * ((ENV1b/ENV1a)^(1/20*1:20))
+    envGrowth <- c(ENV1a, gwt, rep(gwt[20], maxsteps))
   }
 
   nochange = 0
