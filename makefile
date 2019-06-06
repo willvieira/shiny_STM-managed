@@ -8,7 +8,7 @@ UI=ui.R
 
 all: $(CODE) $(DATA) $(img) $(SER) $(UI)
 	# Use rsync to first create STM-managed directory (if doesn't exists) and then sync the changes files
-	rsync -a --rsync-path="mkdir -p /home/local/USHERBROOKE/view2301/STM-managed/ && rsync" ~/GitHub/shiny_managementSTM/* $(SERVER):/home/local/USHERBROOKE/view2301/STM-managed/
+	rsync -a --rsync-path="mkdir -p /home/local/USHERBROOKE/view2301/STM-managed/ && rsync" ~/GitHub/shiny_STM-managed/* $(SERVER):/home/local/USHERBROOKE/view2301/STM-managed/
 
 	# Do all the server stuff with only one ssh using '&&'
 	# '-t' flag is used because of sudo

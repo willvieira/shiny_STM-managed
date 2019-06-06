@@ -1,4 +1,5 @@
 library(shiny)
+load('data/sysdata.rda')
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
@@ -13,20 +14,18 @@ server <- function(input, output) {
 
   output$dynamic <- renderPlot(
   {
-    # latitudinal position
-    if(input$latitude == 'Boreal') env1a = -1.55
-    if(input$latitude == 'Mixed') env1a = -.5
+    # Unscale and add climate change
+    tempUn0 <- input$latitude
 
-    # CC scenarios
-    if(env1a == -1.55) {
-      if(input$cc == 'RCP4.5') env1b = -0.882
-      if(input$cc == 'RCP6') env1b = -0.7335
-      if(input$cc == 'RCP8.5') env1b = -0.1772
-    }else{
-      if(input$cc == 'RCP4.5') env1b = 0.168
-      if(input$cc == 'RCP6') env1b = 0.316
-      if(input$cc == 'RCP8.5') env1b = 0.873
-    }
+    # add climate change
+    RCP <- input$cc
+    if(RCP == 'RCP4.5') tempUn1 <- tempUn0 + 1.8
+    if(RCP == 'RCP6') tempUn1 <- tempUn0 + 2.2
+    if(RCP == 'RCP8.5') tempUn1 <- tempUn0 + 3.7
+
+    # scale warming temperature
+    env1b <- unname((tempUn1 - vars.means['annual_mean_temp'])/vars.sd['annual_mean_temp'])
+    env1a <- unname((tempUn0 - vars.means['annual_mean_temp'])/vars.sd['annual_mean_temp'])
 
     management <- c(input$Plantation, input$Harvest, input$Thinning, input$Enrichement)
 

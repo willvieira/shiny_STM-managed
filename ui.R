@@ -3,7 +3,7 @@ library(shiny)
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(theme = shinythemes::shinytheme("sandstone"),
 
-navbarPage("STM managed - v2.1",
+navbarPage("STM managed - v2.2",
 
   ##########################################################################################
   #  Panel 1 - Dynamic
@@ -12,7 +12,7 @@ navbarPage("STM managed - v2.1",
   tabPanel("Dynamic",
 
   # App title ----
-  titlePanel("Effect of forest management in the migration rate of the eastern North American forest"),
+  titlePanel("Effect of forest management on transient dynamic of the eastern North American forest after climate change"),
 
     # Sidebar layout with input and output definitions ----
       sidebarLayout(
@@ -22,9 +22,11 @@ navbarPage("STM managed - v2.1",
 
           HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
             # Input: Selector for choosing dataset ----
-            radioButtons(inputId = "latitude",
-                        label = "Select the latitudinal position:",
-                        choices = c("Boreal", "Mixed"), inline = T),
+            sliderInput(inputId = "latitude",
+                        label = "Select the latitudinal position (mean annual temperature):",
+                        min = -2.6,
+                        max = 5,
+                        value = 0.08),
 
             radioButtons(inputId = "cc",
                         label = "Select the RCP:",
