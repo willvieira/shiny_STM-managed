@@ -10,7 +10,7 @@ UI=ui.R
 all: $(CODE) $(DATA) $(img) $(SER) $(UI)
 
 	# connect to VPN
-	cat /Users/wvieira/.Will_credentials | /opt/cisco/anyconnect/bin/vpn -s connect rpv.usherbrooke.ca
+	cat /Users/wvieira/.Will_credentials | /opt/cisco/anyconnect/bin/vpn -s connect rpv.usherbrooke.ca >/dev/null
 
 	# Use rsync to first create STM-managed directory (if doesn't exists) and then sync the changes files
 	sshpass -p $(PASS) rsync -a --rsync-path="mkdir -p /home/local/USHERBROOKE/view2301/STM-managed/ && rsync" ~/GitHub/shiny_STM-managed/* $(SERVER):/home/local/USHERBROOKE/view2301/STM-managed/
