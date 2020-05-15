@@ -18,7 +18,7 @@ solve_summary <- function(env1a, env1b, growth, managPractices)
   {
     # create management vector from managPrac list
     management = c(managPrac[[1]][i], managPrac[[2]][i], managPrac[[3]][i], managPrac[[4]][i])
-    res <- solve_Eq(func = model_fm, ENV1a = env1a, ENV1 = env1b,
+    res <- solve_Eq(func = model_fm, ENV1a = env1a, ENV1b = env1b,
                     growth,
                     management = management)
 
