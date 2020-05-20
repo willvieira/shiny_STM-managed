@@ -16,7 +16,9 @@ solve_Eq <- function(func = model_fm, # = model
   
   # get equilibrium for initial condition (ENV1a)
   init <- get_eq(get_pars(ENV1 = ENV1a, ENV2 = 0, params, int = 5))[[1]]
-
+  # In the case T + M are inexistent, add a really small amount of them so the model can reach the real equilibrium
+  if(all(init[c('T', 'M')] <= 5e-5)) init[c('T', 'M')] <- 5e-5
+  
   # get pars depending on the growth mode
   envDiff <- ENV1b - ENV1a
   if(growth == 'stepwise') {
@@ -47,6 +49,10 @@ solve_Eq <- function(func = model_fm, # = model
       di = func(t = 1, state, pars, management)
     }
     state = state + di[[1]]
+    # correct proportions out of the [0 - 1]
+    state[state > 1] <- 1
+    state[state < 0] <- 0
+    
     trace.mat[i+1,] = state
 
     if(sum(abs(trace.mat[i, ] - trace.mat[i-1, ])) < 1e-7) nochange = nochange+1
