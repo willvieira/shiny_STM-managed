@@ -44,3 +44,15 @@ plot_solve <- function(data, data1, plotLimit = NULL, management)
   legend("topright", legend = leg(data1), bty = "n")
   mtext(paste0('Plantation = ', management[1], '%; Harvest = ', management[2], '%; Thinning = ', management[3], '%; Enrich = ', management[4], '%'), side = 3, line = -2.5, cex = 1.5, outer = TRUE)
 }
+
+
+##########################################################################################
+#  Function to run both solveEq and plot_solve functions - Dynamic
+##########################################################################################
+
+run_dynamic <- function(ENV1a, ENV1b, growth, management = c(0, 0, 0, 0), plotLimit = NULL)
+{
+  data <- solve_Eq(func = model_fm, ENV1a = ENV1a, ENV1b = ENV1a, growth = growth, management, plotLimit, maxsteps = 10000)
+  data1 <- solve_Eq(func = model_fm, ENV1a = ENV1a, ENV1b = ENV1b, growth = growth, management, plotLimit, maxsteps = 10000)
+  plot_solve(data = data, data1 = data1, management = management, plotLimit = plotLimit)
+}
