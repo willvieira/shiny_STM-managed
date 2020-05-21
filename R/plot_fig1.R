@@ -18,10 +18,6 @@ plot_fig1 <- function(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment,
       dfYlim[mt, ] <- range(unlist(lapply(fig1List, function(x) range(x[, metrics[mt]]))))
   }
 
-  # manag lines
-  leg <- letters[2:(length(metrics) + 1)]
-  leg <- setNames(paste0('(', leg, ')'), metrics)
-
   Alpha = 190
   mgCols = setNames(c(rgb(144, 178, 67, Alpha, maxColorValue = 255),
                       rgb(11, 89, 105, Alpha, maxColorValue = 255),
@@ -42,8 +38,7 @@ plot_fig1 <- function(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment,
   axis(1, labels = F)
   legend(1.7, 0.94, legend = c('Boreal', 'Mixed +\nTemperate'), lty = 1, col = c(stateCols[1], stateCols[2]), bty = 'n', cex = 1, lwd = 2.1)
   legend(1.7, 0.58, legend = c(expression(paste('T'[0], ' equilibrium')), expression(paste('T'[1], ' equilibrium'))), lty = c(2, 1), col = 1, bty = 'n', cex = 1, lwd = 2.1)
-  legend(par('usr')[1] - (par('usr')[2]-par('usr')[1])*0.06, par('usr')[4], legend = '(a)', bty = 'n', cex = 1.2)
-
+  
   for(mt in metrics)
   {
     # ylim again
@@ -63,7 +58,7 @@ plot_fig1 <- function(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment,
     {
       points(get(paste0('dat_', mg))[, c('env1aUnscaled', mt)], type = 'l', lwd = 2.1, col = mgCols[mg])
     }
-    legend(par('usr')[1] - (par('usr')[2]-par('usr')[1])*0.06, par('usr')[4], legend = leg[mt], bty = 'n', cex = 1.2)
+
   }
   
   mtext("Latitude (annual mean temperature)", 1, line = 1.1, cex = 1.4, at = -3.5)
