@@ -65,7 +65,7 @@ load('data/sysdata.rda')
 #
 
 
-# Parallel loop over all posibilities
+# Parallel loop over all possibilities
 
   # get dat for noManaged and then all practices for two RCP scenarios (4.5 and 8.5)
   if(!dir.exists('data')) dir.create('data')
@@ -98,21 +98,12 @@ load('data/sysdata.rda')
   # Name each element of the list with the simulation name
   names(myList) <- apply(simulations, 1, function(x) paste0(x, collapse = '_'))
 
+  # save into sysdata.rda
   saveRDS(myList, file = 'data/data_fig1.RDS')
-
-#
-
-
-
-# Get range of each transient metric to compose yLim of each plot
-  
-  # variable names
-  metrics <- c('Asymptotic resilience', 'Exposure', 'Initial resilience', 'Sensitivity', 'Cumulative state changes')
-
-  # where to save range
-  df <- setNames(data.frame(matrix(NA, ncol = 2)), c('min', 'max'))
-  
-  for(mt in 1:length(metrics))
-    df[mt, ] <- range(unlist(lapply(myList, function(x) range(x[, metrics[mt]]))))
-  
+  rm(list = ls())
+  load('data/sysdata.rda')
+  objs <- ls()
+  fig1List <- readRDS('data/data_fig2.RDS')
+  save(list = c(objs, 'fig1List'), file = 'data/sysdata.rda')
+  file.remove('data/data_fig1.RDS')
 #

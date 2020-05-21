@@ -56,7 +56,7 @@ server <- function(input, output) {
     #   ylim = list(input$ylimDeltaState, input$ylimDeltaTime, input$ylimR_infinity, input$ylimR_init, input$ylimIntegral)
     # }
 
-    run_fig1(dtList, RCP, managInt, input$range_yLim)
+    run_fig1(fig1List, RCP, managInt, input$range_yLim)
 
   })
 

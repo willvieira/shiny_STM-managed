@@ -15,7 +15,7 @@ plot_fig1 <- function(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment,
   if(range_yLim == 'Fixed')
   {
     for(mt in 1:length(metrics))
-      dfYlim[mt, ] <- range(unlist(lapply(dtList, function(x) range(x[, metrics[mt]]))))
+      dfYlim[mt, ] <- range(unlist(lapply(fig1List, function(x) range(x[, metrics[mt]]))))
   }
 
   # manag lines
@@ -78,14 +78,14 @@ plot_fig1 <- function(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment,
 
 
 # Function to get data and run plot function above
-run_fig1 <- function(dtList, RCP, managInt, range_yLim)
+run_fig1 <- function(fig1List, RCP, managInt, range_yLim)
 {
-  dat_Plantation <- dtList[[paste('Plantation', RCP, managInt, sep = '_')]]
-  dat_Harvest <- dtList[[paste('Harvest', RCP, managInt, sep = '_')]]
-  dat_Thinning <- dtList[[paste('Thinning', RCP, managInt, sep = '_')]]
-  dat_Enrichment <- dtList[[paste('Enrichment', RCP, managInt, sep = '_')]]
-  dat_noManaged <- dtList[[paste('noManaged', RCP, '0.000', sep = '_')]]
-  dat_noCC <- dtList[['noCC']]
+  dat_Plantation <- fig1List[[paste('Plantation', RCP, managInt, sep = '_')]]
+  dat_Harvest <- fig1List[[paste('Harvest', RCP, managInt, sep = '_')]]
+  dat_Thinning <- fig1List[[paste('Thinning', RCP, managInt, sep = '_')]]
+  dat_Enrichment <- fig1List[[paste('Enrichment', RCP, managInt, sep = '_')]]
+  dat_noManaged <- fig1List[[paste('noManaged', RCP, '0.000', sep = '_')]]
+  dat_noCC <- fig1List[['noCC']]
 
   plot_fig1(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment, dat_noManaged, dat_noCC, range_yLim)
 }
