@@ -90,12 +90,12 @@ navbarPage("ShinyApp for the STManaged model",
     ),
 
     ##########################################################################################
-    #  Panel 2 - Summary
+    #  Panel 2 - Fig1
     ##########################################################################################
 
-    tabPanel("Summary",
+    tabPanel("Figure 1",
 
-      titlePanel("Effect of forest management in the migration rate of the eastern North American forest"),
+      titlePanel("Effect of Forest Management on Transient Dynamics After Climate Change"),
 
       # Sidebar layout with input and output definitions ----
       sidebarLayout(
@@ -104,71 +104,32 @@ navbarPage("ShinyApp for the STManaged model",
         sidebarPanel(width = 3,
 
           HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
-            # Input: Selector for choosing dataset ----
-            radioButtons(inputId = "latitude2",
-                        label = "Select the latitudinal position:",
-                        choices = c("Boreal", "Mixed"), inline = T),
-
             radioButtons(inputId = "cc2",
                         label = "Select the RCP:",
-                        choices = c("0", "RCP4.5", "RCP6", "RCP8.5"), inline = T,
+                        choices = c("RCP2.6", "RCP4.5", "RCP6", "RCP8.5"), inline = T,
                         selected = "RCP4.5"),
 
-            radioButtons(inputId = "growth2",
-                        label = "Select the growth patern of climate change:",
-                        choices = c("stepwise", "linear", "exponential"), inline = T),
+          HTML("<font size='4'><b>Management intensity<br></b></font><br>"),
 
-          HTML("<font size='4'><b>Management practices<br></b></font><br>"),
+            sliderInput(inputId = "managInt",
+                        label = "Management intensity",
+                        min = 0.1,
+                        max = 99.7,
+                        step = 0.4,
+                        value = 0.5,
+                        post = '%'),
 
-            # Input: checkbox with management practices ----
-            checkboxGroupInput("managPractices", "Select at least one management practice:",
-                               c("Plantation" = 1,
-                                 "Harvest" = 2,
-                                 "Thinning" = 3,
-                                 "Enrichement" = 4), inline = T),
+           HTML("<br><font size='4'><b>Range of y axis<br></b></font>"),
 
-           HTML("<font size='4'><b>Fixed limit of y axis<br></b></font><br>"),
-
-             checkboxInput("ylimNull", "Manual change of Y axis", FALSE),
-
-             sliderInput(inputId = "ylimDeltaState",
-                         withMathJax(label = "$$\\Delta state$$"),
-                         min = 0,
-                         max = 2,
-                         step = 0.01,
-                         value = c(1, 1.3)),
-
-             sliderInput(inputId = "ylimDeltaTime",
-                         withMathJax(label = "$$\\Delta time$$"),
-                         min = 0,
-                         max = 300,
-                         value = c(30, 280)),
-
-             sliderInput(inputId = "ylimR_infinity",
-                         withMathJax(label = "$$-R_{\\infty}$$"),
-                         min = -0.6,
-                         max = 0,
-                         step = 0.01,
-                         value = c(-0.5, -0.05)),
-
-             sliderInput(inputId = "ylimR_init",
-                         withMathJax(label = "$$-R_{0}$$"),
-                         min = -0.3,
-                         max = 0.5,
-                         step = 0.01,
-                         value = c(-0.2, 0.4)),
-
-             sliderInput(inputId = "ylimIntegral",
-                         withMathJax(label = "$$\\int S(t)dt$$"),
-                         min = 0,
-                         max = 180,
-                         value = c(5, 165))
+            radioButtons(inputId = "range_yLim",
+                         label = "",
+                         choices = c("Fixed", "Dynamic"), inline = T,
+                         selected = "Fixed")
         ),
 
         # Main panel for displaying outputs ----
         mainPanel(
-          h3(textOutput(outputId = "error")),
-          plotOutput(outputId = "summary", height = 650)
+          plotOutput(outputId = "fig1", height = 825, width = '115%')
         )
       )
     ),

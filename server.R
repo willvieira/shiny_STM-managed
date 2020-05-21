@@ -6,6 +6,7 @@ server <- function(input, output) {
 
   # get the model and functions
   file.sources <- dir('R/')
+  file.sources <- file.sources[!file.sources == 'solve_Fig1.R']
   invisible(sapply(paste0('R/', file.sources), source))
 
   ##########################################################################################
@@ -33,55 +34,29 @@ server <- function(input, output) {
   })
 
   ##########################################################################################
-  #  Output of shiny App for Panel 2 - Summary
+  #  Output of shiny App for Panel 2 - Figure 1
   ##########################################################################################
 
-  output$summary <- renderPlot(
+  output$fig1 <- renderPlot(
   {
-    # latitudinal position
-    if(input$latitude2 == 'Boreal') env1a = -1.55
-    if(input$latitude2 == 'Mixed') env1a = -.5
-
     # CC scenarios
-    if(env1a == -1.55) {
-      if(input$cc2 == '0') env1b = -1.55
-      if(input$cc2 == 'RCP4.5') env1b = -0.882
-      if(input$cc2 == 'RCP6') env1b = -0.7335
-      if(input$cc2 == 'RCP8.5') env1b = -0.1772
-    }else{
-      if(input$cc2 == '0') env1b = -.5
-      if(input$cc2 == 'RCP4.5') env1b = 0.168
-      if(input$cc2 == 'RCP6') env1b = 0.316
-      if(input$cc2 == 'RCP8.5') env1b = 0.873
-    }
+    if(input$cc2 == 'RCP2.6') RCP = '2.6'
+    if(input$cc2 == 'RCP4.5') RCP = '4.5'
+    if(input$cc2 == 'RCP6') RCP = '6.0'
+    if(input$cc2 == 'RCP8.5') RCP = '8.5'
+  
 
-    # management practices
-    managP <- rep(0, 4)
-    for(i in 1:length(input$managPractices)) {
-      if(input$managPractices[i] == 1) {
-        managP[1] = 1
-      }else if(input$managPractices[i] == 2) {
-        managP[2] = 1
-      }else if(input$managPractices[i] == 3) {
-        managP[3] = 1
-      }else if(input$managPractices[i] == 4) {
-        managP[4] = 1
-      }
-    }
+    # management intensity
+    managInt <- input$managInt/100
 
-    if(input$ylimNull == FALSE) {
-      ylim <- rep(list(NULL), 5)
-    }else {
-      ylim = list(input$ylimDeltaState, input$ylimDeltaTime, input$ylimR_infinity, input$ylimR_init, input$ylimIntegral)
-    }
+    # if(input$ylimNull == FALSE) {
+    #   ylim <- rep(list(NULL), 5)
+    # }else {
+    #   ylim = list(input$ylimDeltaState, input$ylimDeltaTime, input$ylimR_infinity, input$ylimR_init, input$ylimIntegral)
+    # }
 
-    run_summary(env1a = env1a, env1b = env1b, growth = input$growth2, managPractices = managP, ylim = ylim)
+    run_fig1(dtList, RCP, managInt, input$range_yLim)
 
-  })
-
-  output$error <- renderText(
-  {
-    if(is.null(input$managPractices)) warning('Please, select at least one management practice')
   })
 
   ##########################################################################################
