@@ -12,8 +12,6 @@ solve_Eq <- function(func = model_fm, # = model
 {
   library(rootSolve)
 
-  load('data/sysdata.rda')
-  
   # get equilibrium for initial condition (ENV1a)
   init <- get_eq(get_pars(ENV1 = ENV1a, ENV2 = 0, params, int = 5))[[1]]
   # In the case T + M are inexistent, add a really small amount of them so the model can reach the real equilibrium
