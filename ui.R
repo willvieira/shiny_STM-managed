@@ -1,9 +1,9 @@
 library(shiny)
 
 # Define UI for app that draws a histogram ----
-ui <- fluidPage(theme = shinythemes::shinytheme("sandstone"),
+ui <- fluidPage(theme = shinythemes::shinytheme("cosmo"),
 
-navbarPage("STM managed - v2.2",
+navbarPage("ShinyApp for the STManaged model",
 
   ##########################################################################################
   #  Panel 1 - Dynamic
@@ -12,7 +12,7 @@ navbarPage("STM managed - v2.2",
   tabPanel("Dynamic",
 
   # App title ----
-  titlePanel("Effect of forest management on transient dynamic of the eastern North American forest after climate change"),
+  titlePanel("Effect of Forest Management on Transient Dynamics After Climate Change"),
 
     # Sidebar layout with input and output definitions ----
       sidebarLayout(
@@ -26,7 +26,8 @@ navbarPage("STM managed - v2.2",
                         label = "Select the latitudinal position (mean annual temperature):",
                         min = -2.6,
                         max = 5,
-                        value = 0.08),
+                        value = 0.08,
+                        post = '°C'),
 
             radioButtons(inputId = "cc",
                         label = "Select the RCP:",
@@ -42,23 +43,31 @@ navbarPage("STM managed - v2.2",
             sliderInput(inputId = "Plantation",
                         label = "Plantation intensity",
                         min = 0,
-                        max = 1,
-                        value = 0),
-            sliderInput(inputId = "Harvest",
-                        label = "Harvest intensity",
-                        min = 0,
-                        max = 1,
-                        value = 0),
-            sliderInput(inputId = "Thinning",
-                        label = "Thinning intensity",
-                        min = 0,
-                        max = 1,
-                        value = 0),
+                        max = 100,
+                        step = 0.5,
+                        value = 0,
+                        post = '%'),
             sliderInput(inputId = "Enrichement",
                         label = "Enrichement planting intensity",
                         min = 0,
-                        max = 1,
-                        value = 0),
+                        max = 100,
+                        step = 0.5,
+                        value = 0,
+                        post = '%'),
+            sliderInput(inputId = "Harvest",
+                        label = "Harvest intensity",
+                        min = 0,
+                        max = 100,
+                        step = 0.5,
+                        value = 0,
+                        post = '%'),
+            sliderInput(inputId = "Thinning",
+                        label = "Thinning intensity",
+                        min = 0,
+                        max = 100,
+                        step = 0.5,
+                        value = 0,
+                        post = '%'),
 
           HTML("<font size='4'><b>Limit of x axis<br></b></font><br>"),
             # Input: Selector for choosing dataset ----
@@ -74,7 +83,6 @@ navbarPage("STM managed - v2.2",
 
           # Output
           plotOutput(outputId = "dynamic", height = 430),
-          #plotOutput(outputId = "test")
 
           div(img(src='model_pr.png', height = 350), style="text-align: center;")
         )

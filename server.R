@@ -27,7 +27,7 @@ server <- function(input, output) {
     env1b <- unname((tempUn1 - vars.means['annual_mean_temp'])/vars.sd['annual_mean_temp'])
     env1a <- unname((tempUn0 - vars.means['annual_mean_temp'])/vars.sd['annual_mean_temp'])
 
-    management <- c(input$Plantation, input$Harvest, input$Thinning, input$Enrichement)
+    management <- c(input$Plantation, input$Harvest, input$Thinning, input$Enrichement)/100
 
     run_dynamic(ENV1a = env1a, ENV1b = env1b, growth = input$growth, management = management, plotLimit = input$plotLimit)
   })
