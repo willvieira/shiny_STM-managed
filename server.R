@@ -20,6 +20,7 @@ server <- function(input, output) {
 
     # add climate change
     RCP <- input$cc
+    if(RCP == 'RCP2.6') tempUn1 <- tempUn0 + 1
     if(RCP == 'RCP4.5') tempUn1 <- tempUn0 + 1.8
     if(RCP == 'RCP6') tempUn1 <- tempUn0 + 2.2
     if(RCP == 'RCP8.5') tempUn1 <- tempUn0 + 3.7

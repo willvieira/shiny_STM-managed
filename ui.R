@@ -31,7 +31,9 @@ navbarPage("ShinyApp for the STManaged model",
 
             radioButtons(inputId = "cc",
                         label = "Select the RCP:",
-                        choices = c("RCP4.5", "RCP6", "RCP8.5"), inline = T),
+                        choices = c("RCP2.6","RCP4.5", "RCP6", "RCP8.5"),
+                        inline = T,
+                        selected = "RCP4.5"),
 
             radioButtons(inputId = "growth",
                         label = "Select the growth patern of climate change:",
