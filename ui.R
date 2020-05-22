@@ -140,9 +140,9 @@ navbarPage("ShinyApp for the STManaged model",
     #  Panel 3 - Output correlation
     ##########################################################################################
 
-    tabPanel("Output correlation",
+    tabPanel("Figure 2",
 
-      titlePanel("Effect of forest management in the migration rate of the eastern North American forest"),
+      titlePanel("Effect of Forest Management on Transient Dynamics After Climate Change"),
 
       # Sidebar layout with input and output definitions ----
       sidebarLayout(
@@ -150,33 +150,33 @@ navbarPage("ShinyApp for the STManaged model",
         # Sidebar panel for inputs ----
         sidebarPanel(width = 3,
 
-          HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
-            # Input: Selector for choosing dataset ----
-            radioButtons(inputId = "latitude3",
-                        label = "Select the latitudinal position:",
-                        choices = c("Boreal", "Mixed"), inline = T),
-
+          HTML("<font size='4'><b>Climate change scenarios<br></b></font>"),
             radioButtons(inputId = "cc3",
                         label = "Select the RCP:",
-                        choices = c("0", "RCP4.5", "RCP6", "RCP8.5"),
+                        choices = c("RCP2.6", "RCP4.5", "RCP6", "RCP8.5"), inline = T,
                         selected = "RCP4.5"),
 
-            radioButtons(inputId = "growth3",
-                        label = "Select the growth patern of climate change:",
-                        choices = c("stepwise", "linear", "exponential"), inline = T),
+          HTML("<br><font size='4'><b>Latitudinal position</b></font>"),
 
-          HTML("<font size='4'><b>Management practices<br></b></font><br>"),
+            sliderInput(inputId = "envir1a",
+                        label = "Select the mean annual temperature:",
+                        min = -2.6,
+                        max = 5,
+                        step = 0.1,
+                        value = -1,
+                        post = '°C'),
 
-            # Input: checkbox with management practices ----
-            radioButtons("managPractices2", "Select at least one management practice:",
-                         choices = c('Plantation', 'Harvest', 'Thinning', 'Enrichement planting'),
-                         selected = 'Plantation')
+           HTML("<br><font size='4'><b>Range of y axis</b></font>"),
 
+            radioButtons(inputId = "range_yLim2",
+                         label = "",
+                         choices = c("Fixed", "Dynamic"), inline = T,
+                         selected = "Fixed")
           ),
 
         # Main panel for displaying outputs ----
         mainPanel(
-          plotOutput(outputId = "cor", height = 1800)
+          plotOutput(outputId = "fig3", height = 825, width = '115%')
         )
       )
     )

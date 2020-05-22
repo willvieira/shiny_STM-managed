@@ -6,7 +6,7 @@ server <- function(input, output) {
 
   # get the model and functions
   file.sources <- dir('R/')
-  file.sources <- file.sources[!file.sources == 'solve_Fig1.R']
+  file.sources <- file.sources[!file.sources %in% c('solve_Fig1.R', 'solve_Fig2.R')]
   invisible(sapply(paste0('R/', file.sources), source))
 
   ##########################################################################################
@@ -61,35 +61,21 @@ server <- function(input, output) {
   })
 
   ##########################################################################################
-  #  Output of shiny App for Panel 3 - Output correlation
+  #  Output of shiny App for Panel 3 - Figure 2
   ##########################################################################################
 
-  output$cor <- renderPlot(
+  output$fig3 <- renderPlot(
   {
-    # latitudinal position
-    if(input$latitude3 == 'Boreal') env1a = -1.55
-    if(input$latitude3 == 'Mixed') env1a = -.5
-
     # CC scenarios
-    if(env1a == -1.55) {
-      if(input$cc3 == '0') env1b = -1.55
-      if(input$cc3 == 'RCP4.5') env1b = -0.882
-      if(input$cc3 == 'RCP6') env1b = -0.7335
-      if(input$cc3 == 'RCP8.5') env1b = -0.1772
-    }else{
-      if(input$cc3 == '0') env1b = -.5
-      if(input$cc3 == 'RCP4.5') env1b = 0.168
-      if(input$cc3 == 'RCP6') env1b = 0.316
-      if(input$cc3 == 'RCP8.5') env1b = 0.873
-    }
+    if(input$cc3 == 'RCP2.6') RCP = '2.6'
+    if(input$cc3 == 'RCP4.5') RCP = '4.5'
+    if(input$cc3 == 'RCP6') RCP = '6.0'
+    if(input$cc3 == 'RCP8.5') RCP = '8.5'
 
-    # management practices
-    if(input$managPractices2 == 'Plantation') managP2 = c(1, 0, 0, 0)
-    if(input$managPractices2 == 'Harvest') managP2 = c(0, 1, 0, 0)
-    if(input$managPractices2 == 'Thinning') managP2 = c(0, 0, 1, 0)
-    if(input$managPractices2 == 'Enrichement planting') managP2 = c(0, 0, 0, 1)
+    # management intensity
+    envir1a <- input$envir1a
 
-    plot_outputCor(env1a = env1a, env1b = env1b, growth = input$growth3, managPractices = managP2)
+    run_fig2(fig2List, RCP, envir1a, input$range_yLim2)
 
   })
 }
