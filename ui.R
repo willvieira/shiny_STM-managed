@@ -5,6 +5,30 @@ ui <- fluidPage(theme = shinythemes::shinytheme("cosmo"),
 
 navbarPage("ShinyApp for the STManaged model",
 
+tabPanel("Home",
+
+  HTML("<h1> Effect of Forest Management on Transient Dynamics After Climate Change</h1>
+        <font size='5'> Willian Vieira </font><br>
+        <font size='4'> Last updated on May 22, 2020 </font> <br><br>
+
+        This is a shiny application accompanying the publication hosted <a href='https://github.com/willvieira/ms_STM-managed'>here</a>.
+        It contains three distinct tabs in which you can play with the model parameters.
+
+        <h2> Dynamic tab </h2>
+
+        <p> This tab is... </p>
+
+        <h2> Figure 1 </h2>
+
+        <p> This tab is... </p>
+
+        <h2> Figure 2 </h2>
+
+        <p> This tab is... </p>
+      "),
+
+  ),
+
   ##########################################################################################
   #  Panel 1 - Dynamic
   ##########################################################################################
