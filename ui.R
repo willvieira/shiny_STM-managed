@@ -20,14 +20,16 @@ navbarPage("ShinyApp for the STManaged model",
         # Sidebar panel for inputs ----
         sidebarPanel(width = 3,
 
-          HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
+          HTML("<font size='4'><b>Latitudinal position<br></b></font>"),
             # Input: Selector for choosing dataset ----
             sliderInput(inputId = "latitude",
-                        label = "Select the latitudinal position (mean annual temperature):",
+                        label = "Select the mean annual temperature:",
                         min = -2.6,
                         max = 5,
                         value = 0.08,
                         post = '°C'),
+
+          HTML("<br><font size='4'><b>Climate change scenarios<br></b></font>"),
 
             radioButtons(inputId = "cc",
                         label = "Select the RCP:",
@@ -36,10 +38,10 @@ navbarPage("ShinyApp for the STManaged model",
                         selected = "RCP4.5"),
 
             radioButtons(inputId = "growth",
-                        label = "Select the growth patern of climate change:",
+                        label = "Select how warming temperature increases:",
                         choices = c("stepwise", "linear", "exponential"), inline = T),
 
-          HTML("<font size='4'><b>Intensity of management practices<br></b></font><br>"),
+          HTML("<br><font size='4'><b>Intensity of management practices</b></font>"),
 
             # Input: Slider for the management Intensity ----
             sliderInput(inputId = "Plantation",
@@ -71,7 +73,7 @@ navbarPage("ShinyApp for the STManaged model",
                         value = 0,
                         post = '%'),
 
-          HTML("<font size='4'><b>Limit of x axis<br></b></font><br>"),
+          HTML("<br><font size='4'><b>Limit of x axis<br></b></font>"),
             # Input: Selector for choosing dataset ----
             sliderInput(inputId = "plotLimit",
                         label = "Choose a limit",
@@ -105,23 +107,23 @@ navbarPage("ShinyApp for the STManaged model",
         # Sidebar panel for inputs ----
         sidebarPanel(width = 3,
 
-          HTML("<font size='4'><b>Climate change scenarios<br></b></font><br>"),
+          HTML("<font size='4'><b>Climate change scenarios<br></b></font>"),
             radioButtons(inputId = "cc2",
                         label = "Select the RCP:",
                         choices = c("RCP2.6", "RCP4.5", "RCP6", "RCP8.5"), inline = T,
                         selected = "RCP4.5"),
 
-          HTML("<font size='4'><b>Management intensity<br></b></font><br>"),
+          HTML("<br><font size='4'><b>Intensity of management practices<br></b></font>"),
 
             sliderInput(inputId = "managInt",
-                        label = "Management intensity",
+                        label = "Select the intensity of forest management:",
                         min = 0.1,
                         max = 99.7,
                         step = 0.4,
                         value = 0.5,
                         post = '%'),
 
-           HTML("<br><font size='4'><b>Range of y axis<br></b></font>"),
+           HTML("<br><font size='4'><b>Range of y axis</b></font>"),
 
             radioButtons(inputId = "range_yLim",
                          label = "",
@@ -172,7 +174,7 @@ navbarPage("ShinyApp for the STManaged model",
                          label = "",
                          choices = c("Fixed", "Dynamic"), inline = T,
                          selected = "Fixed")
-          ),
+        ),
 
         # Main panel for displaying outputs ----
         mainPanel(
