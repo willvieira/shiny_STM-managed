@@ -37,7 +37,7 @@ jobs:
           SERVER: ${{ secrets.SERVER }}
 
       - name: Deploy
-        run: sshpass -p $PASS ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$SERVER -T "sudo rm -rf ~/../../../../srv/shiny-server/STM-managed && sudo cp -rf shiny_STM-managed/ ~/../../../../srv/shiny-server/STM-managed && sudo chmod 775 /../../../../srv/shiny-server/STM-managed/www/ && sudo chmod 664 /../../../../srv/shiny-server/STM-managed/www/model_pr.png && sudo service shiny-server restart && rm -rf shiny_STM-managed"
+        run: sshpass -p $PASS ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$SERVER -tt "sudo rm -rf ~/../../../../srv/shiny-server/STM-managed && sudo cp -rf shiny_STM-managed/ ~/../../../../srv/shiny-server/STM-managed && sudo chmod 775 /../../../../srv/shiny-server/STM-managed/www/ && sudo chmod 664 /../../../../srv/shiny-server/STM-managed/www/model_pr.png && sudo service shiny-server restart && rm -rf shiny_STM-managed"
         env:
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
