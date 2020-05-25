@@ -9,13 +9,16 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+
       - name: Install vpn open connect
         run: |
           sudo /sbin/modprobe tun
           sudo apt-get install network-manager-openconnect-gnome
+
       - name: Install sshpass
         run: |
           sudo apt-get install sshpass
+
       - name: Open VPN
         run: |
           echo $PASS | sudo openconnect rpv.usherbrooke.ca --user=$USER --background --passwd-on-stdin
@@ -26,6 +29,7 @@ jobs:
       - name: Send files to the server
         run: |
           pwd
+          ls -l
           sshpass -p $PASS scp -r ../shiny_STM-managed $USER@$SERVER:/home/local/USHERBROOKE/$USER/
         env:
           USER: ${{ secrets.USER }}
