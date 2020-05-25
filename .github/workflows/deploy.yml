@@ -16,11 +16,9 @@ jobs:
         run: |
           sudo /sbin/modprobe tun
           sudo apt-get install network-manager-openconnect-gnome
-
       - name: Install sshpass
         run: |
           sudo apt-get install sshpass
-
       - name: Open VPN
         run: |
           echo $PASS | sudo openconnect rpv.usherbrooke.ca --user=$USER --background --passwd-on-stdin
@@ -30,6 +28,8 @@ jobs:
 
       - name: Send files to the server
         run: |
+          pwd
+          ls -l
           sshpass -p $PASS scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ../shiny_STM-managed $USER@$SERVER:/home/local/USHERBROOKE/$USER/
         env:
           USER: ${{ secrets.USER }}
@@ -37,16 +37,8 @@ jobs:
           SERVER: ${{ secrets.SERVER }}
 
       - name: Deploy
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER }}
-          username: ${{ secrets.USER }}
-          password: ${{ secrets.PASS }}
-          debug: true
-          script: |
-            rm -rf ~/../../../../srv/shiny-server/STM-managed
-            sudo cp -rf shiny_STM-managed/ ~/../../../../srv/shiny-server/STM-managed
-            sudo chmod 775 /../../../../srv/shiny-server/STM-managed/www/
-            sudo chmod 664 /../../../../srv/shiny-server/STM-managed/www/model_pr.png
-            sudo service shiny-server restart
-            rm -rf STM-managed
+        run: sshpass -p $PASS ssh $USER@$SERVER -T "touch test.txt"
+        env:
+          USER: ${{ secrets.USER }}
+          PASS: ${{ secrets.PASS }}
+          SERVER: ${{ secrets.SERVER }}
