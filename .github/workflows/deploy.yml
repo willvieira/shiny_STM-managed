@@ -32,7 +32,7 @@ jobs:
         run: |
           pwd
           ls -l
-          sshpass -p $PASS scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ../shiny_STM-managed $USER@$SERVER:/home/local/USHERBROOKE/$USER/
+          sshpass -p $PASS scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ../shiny_STM-managed $USER@$SERVER:/home/local/USHERBROOKE/$USER
         env:
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
