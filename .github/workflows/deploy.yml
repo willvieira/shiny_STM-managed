@@ -22,10 +22,19 @@ jobs:
         run: |
           echo $USER
           echo $PASS | sudo openconnect rpv.usherbrooke.ca --user=$USER --background --passwd-on-stdin
+        env:
+          USER: ${{ secrets.USER }}
+          PASS: ${{ secrets.PASS }}
 
       - name: Send files to the server
         run: |
           sshpass -p $PASS rsync -a --rsync-path="mkdir -p /home/local/USHERBROOKE/$USER/STM-managed/ && rsync" /* $SERVER:/home/local/USHERBROOKE/$USER/STM-managed/
+        env:
+          USER: ${{ secrets.USER }}
+          PASS: ${{ secrets.PASS }}
 
       - name: Deploy
         run: sshpass -p $PASS ssh $SERVER -t "sudo cp -rf STM-managed/ ~/../../../../srv/shiny-server/ && sudo chmod 775 /../../../../srv/shiny-server/STM-managed/www/ && sudo chmod 664 /../../../../srv/shiny-server/STM-managed/www/model_pr.png && sudo service shiny-server restart"
+        env:
+          USER: ${{ secrets.USER }}
+          PASS: ${{ secrets.PASS }}
