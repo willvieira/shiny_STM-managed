@@ -25,7 +25,7 @@ tabPanel("Home",
         <h2> Figure 2 </h2>
 
         <p> This tab is... </p>
-      "),
+      ")
 
   ),
 
