@@ -13,16 +13,25 @@ jobs:
         run: |
           sudo /sbin/modprobe tun
           sudo apt-get install network-manager-openconnect-gnome
-
       - name: Install sshpass
         run: |
           sudo apt-get install sshpass
-
-      - name: Start VPN, send files and deploy
+      - name: Open VPN
         run: |
           echo $PASS | sudo openconnect rpv.usherbrooke.ca --user=$USER --background --passwd-on-stdin
-          sshpass -p $PASS rsync -a --rsync-path="mkdir -p /home/local/USHERBROOKE/$USER/STM-managed/ && rsync" /* $SERVER:/home/local/USHERBROOKE/$USER/STM-managed/
-          sshpass -p $PASS ssh $SERVER -t "sudo cp -rf STM-managed/ ~/../../../../srv/shiny-server/ && sudo chmod 775 /../../../../srv/shiny-server/STM-managed/www/ && sudo chmod 664 /../../../../srv/shiny-server/STM-managed/www/model_pr.png && sudo service shiny-server restart"   
+        env:
+          USER: ${{ secrets.USER }}
+          PASS: ${{ secrets.PASS }}
+
+      - name: Send files to the server
+        run: |
+          sshpass -p $PASS scp -r $GITHUB_WORKSPACE/shiny_STM-managed $USER@$SERVER:/home/local/USHERBROOKE/$USER/
+        env:
+          USER: ${{ secrets.USER }}
+          PASS: ${{ secrets.PASS }}
+
+      - name: Deploy
+        run: sshpass -p $PASS ssh $USER@$SERVER -t "sudo cp -rf STM-managed/ ~/../../../../srv/shiny-server/ && sudo chmod 775 /../../../../srv/shiny-server/STM-managed/www/ && sudo chmod 664 /../../../../srv/shiny-server/STM-managed/www/model_pr.png && sudo service shiny-server restart && rm -rf STM-managed"
         env:
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
