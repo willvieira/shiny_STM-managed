@@ -20,6 +20,7 @@ jobs:
 
       - name: Open VPN
         run: |
+          echo @USER
           echo $PASS | sudo openconnect rpv.usherbrooke.ca --user=$USER --background --passwd-on-stdin
 
       - name: Send files to the server
