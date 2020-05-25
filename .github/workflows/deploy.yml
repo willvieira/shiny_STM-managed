@@ -37,7 +37,7 @@ jobs:
           SERVER: ${{ secrets.SERVER }}
 
       - name: Deploy
-        run: sshpass -p $PASS ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$SERVER touch test10.txt
+        run: sshpass -p $PASS ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null $USER@$SERVER "touch test10.txt && touch test1.txt"
         env:
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
