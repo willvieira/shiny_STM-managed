@@ -26,18 +26,8 @@ jobs:
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
 
-      - name: Send files to the server
-        run: |
-          pwd
-          ls -l
-          sshpass -p $PASS scp -r -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ../shiny_STM-managed $USER@$SERVER:/home/local/USHERBROOKE/$USER/
-        env:
-          USER: ${{ secrets.USER }}
-          PASS: ${{ secrets.PASS }}
-          SERVER: ${{ secrets.SERVER }}
-
       - name: Deploy
-        run: sshpass -p $PASS ssh $USER@$SERVER -T "touch test.txt"
+        run: sshpass -p $PASS ssh $USER@$SERVER touch test.txt
         env:
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
