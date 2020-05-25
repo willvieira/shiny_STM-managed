@@ -109,7 +109,7 @@ load('data/sysdata.rda')
     load('data/sysdata.rda')
     objs <- ls()
     fig2List <- readRDS('data/data_fig2.RDS')
-    save(list = c(objs, 'fig2List'), file = 'data/sysdata.rda')
+    save(list = c(objs, 'fig2List'), file = 'data/sysdata.rda', version = 2)
     file.remove('data/data_fig2.RDS')
 
 #
