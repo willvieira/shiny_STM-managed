@@ -37,4 +37,4 @@ jobs:
         env:
           USER: ${{ secrets.USER }}
           PASS: ${{ secrets.PASS }}
-          PASS: ${{ secrets.PASS }}
+          SERVER: ${{ secrets.SERVER }}
