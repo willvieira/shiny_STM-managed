@@ -42,6 +42,7 @@ jobs:
           host: ${{ secrets.SERVER }}
           username: ${{ secrets.USER }}
           password: ${{ secrets.PASS }}
+          debug: true
           script: |
             rm -rf ~/../../../../srv/shiny-server/STM-managed
             sudo cp -rf shiny_STM-managed/ ~/../../../../srv/shiny-server/STM-managed
