@@ -64,7 +64,7 @@ server <- function(input, output) {
   #  Output of shiny App for Panel 3 - Figure 2
   ##########################################################################################
 
-  output$fig3 <- renderPlot(
+  output$fig2 <- renderPlot(
   {
     # CC scenarios
     if(input$cc3 == 'RCP2.6') RCP = '2.6'
@@ -75,7 +75,7 @@ server <- function(input, output) {
     # management intensity
     envir1a <- input$envir1a
 
-    run_fig2(fig2List, fig2List, RCP, envir1a, input$range_yLim2)
+    run_fig2(fig1List, fig2List, RCP, envir1a, input$range_yLim2)
 
   })
 }
