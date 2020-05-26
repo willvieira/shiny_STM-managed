@@ -110,7 +110,7 @@ tabPanel("Home",
         mainPanel(
 
           # Output
-          plotOutput(outputId = "dynamic", height = 430),
+          plotOutput(outputId = "dynamic", height = 600),
 
           div(img(src='model_pr.png', height = 350), style="text-align: center;")
         )
@@ -157,7 +157,7 @@ tabPanel("Home",
 
         # Main panel for displaying outputs ----
         mainPanel(
-          plotOutput(outputId = "fig1", height = 825, width = '115%')
+          plotOutput(outputId = "fig1", height = 950, width = '115%')
         )
       )
     ),
@@ -202,7 +202,7 @@ tabPanel("Home",
 
         # Main panel for displaying outputs ----
         mainPanel(
-          plotOutput(outputId = "fig3", height = 825, width = '115%')
+          plotOutput(outputId = "fig3", height = 950, width = '115%')
         )
       )
     )
