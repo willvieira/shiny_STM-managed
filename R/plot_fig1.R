@@ -2,7 +2,7 @@
 #  Function to plot solve_summary
 ##########################################################################################
 
-plot_fig1 <- function(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment, dat_noManaged, dat_noCC, range_yLim)
+plot_fig1 <- function(fig1List, dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment, dat_noManaged, dat_noCC, range_yLim)
 {
   
   practices <- c('Plantation', 'Enrichment', 'Harvest', 'Thinning', 'noManaged')
@@ -82,5 +82,5 @@ run_fig1 <- function(fig1List, RCP, managInt, range_yLim)
   dat_noManaged <- fig1List[[paste('noManaged', RCP, '0.000', sep = '_')]]
   dat_noCC <- fig1List[['noCC']]
 
-  plot_fig1(dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment, dat_noManaged, dat_noCC, range_yLim)
+  plot_fig1(fig1List, dat_Plantation, dat_Harvest, dat_Thinning, dat_Enrichment, dat_noManaged, dat_noCC, range_yLim)
 }
