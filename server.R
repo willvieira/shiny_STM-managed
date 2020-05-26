@@ -75,7 +75,7 @@ server <- function(input, output) {
     # management intensity
     envir1a <- input$envir1a
 
-    run_fig2(fig2List, RCP, envir1a, input$range_yLim2)
+    run_fig2(fig2List, fig2List, RCP, envir1a, input$range_yLim2)
 
   })
 }

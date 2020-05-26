@@ -75,7 +75,7 @@ plot_fig2 <- function(fig2List, dat_Plantation, dat_Harvest, dat_Thinning, dat_E
 
 
 # Function to get data and run plot function above
-run_fig2 <- function(fig2List, RCP, env1a, range_yLim)
+run_fig2 <- function(fig1List, fig2List, RCP, env1a, range_yLim)
 {
 
   env1a <- as.character(env1a)
