@@ -29,7 +29,7 @@ plot_fig1 <- function(fig1List, dat_Plantation, dat_Harvest, dat_Thinning, dat_E
   stateCols <- c("darkcyan", "orange", "palegreen3", "black")
 
   # Create img directory in case it does not exists
-  par(mfcol = c(3, 3), mar = c(1, 2.5, .5, 0.8), oma = c(1.5, 0, 0.5, 5), mgp = c(1.4, 0.2, 0), tck = -.008, cex = 1.4)
+  par(mfcol = c(3, 3), mar = c(1, 2.5, .5, 0.8), oma = c(1.5, 0, 0.5, 5), mgp = c(1.4, 0.2, 0), tck = -.008, cex = 1.4, bg = '#fbfbfb')
 
   plot(dat_noManaged[, c('env1aUnscaled', 'EqB')], type = 'l', xaxt = 'n', xlab = '', ylab = 'State proportion', ylim = c(0, .98), col = stateCols[1], lwd = 2.1)
   points(dat_noManaged$env1aUnscaled, dat_noManaged$EqM + dat_noManaged$EqT, type = 'l', col = stateCols[2], lwd = 2.1)

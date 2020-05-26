@@ -31,7 +31,7 @@ plot_solve <- function(data, data1, plotLimit = NULL, management)
   management <- management * 100
 
   #  plot
-  par(mfrow = c(1, 2), cex = 1.4, mar = c(4,3,4,2), mgp = c(1.5, 0.3, 0), tck = -.008)
+  par(mfrow = c(1, 2), cex = 1.4, mar = c(4,3,4,2), mgp = c(1.5, 0.3, 0), tck = -.008, bg = '#fbfbfb')
   plot(data[[2]][, 1], type = "l", col = stateColor[1], ylim = c(0, 1), xlim = xlim, xlab = "", ylab = "State proportion", lwd = 2.1)
   invisible(sapply(2:4, function(x) lines(data[[2]][, x], col = stateColor[x], lwd = 2.1)))
   mtext("No climate change", 3, line = .4, cex = 1.3)

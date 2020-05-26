@@ -1,7 +1,8 @@
 library(shiny)
 
-# Define UI for app that draws a histogram ----
 ui <- fluidPage(theme = shinythemes::shinytheme("cosmo"),
+
+includeCSS('style.css'),
 
 navbarPage("ShinyApp for the STManaged model",
 
@@ -110,7 +111,7 @@ tabPanel("Home",
         mainPanel(
 
           # Output
-          plotOutput(outputId = "dynamic", height = 500),
+          plotOutput(outputId = "dynamic", height = 470),
 
           div(img(src='model_pr.png', height = 350), style="text-align: center;")
         )
@@ -157,7 +158,7 @@ tabPanel("Home",
 
         # Main panel for displaying outputs ----
         mainPanel(
-          plotOutput(outputId = "fig1", height = 980, width = '115%')
+          plotOutput(outputId = "fig1", height = 850, width = '115%')
         )
       )
     ),
@@ -202,7 +203,7 @@ tabPanel("Home",
 
         # Main panel for displaying outputs ----
         mainPanel(
-          plotOutput(outputId = "fig2", height = 980, width = '115%')
+          plotOutput(outputId = "fig2", height = 850, width = '115%')
         )
       )
     )
