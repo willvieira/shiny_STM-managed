@@ -1,5 +1,5 @@
-# shiny_managementSTM
+# shiny_STM-managed
 
-![Deploy](https://github.com/willvieira/shiny_STM-managed/workflows/Deploy/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![IELab Deploy](https://github.com/willvieira/shiny_STM-managed/workflows/Deploy/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Shiny App for the analytical analysis for the effect of forest management in the migration rate using a State Transition Model
+Shiny App to test the potential of forest management to accelerate northward range shift of the boreal-temperate forest ecotone.
